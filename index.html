@@ -1,0 +1,2358 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Já saiu do nosso nome? — Arbitralis</title>
+<meta name="description" content="Verificação registral: o comprador já passou o imóvel para o nome dele?">
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
+<style>:root{
+  --indigo:#20154C; --indigo-900:#120C2A; --indigo-50:#F0EFF3; --indigo-100:#CDCBD7;
+  --indigo-200:#9C97AF; --indigo-400:#524974;
+  --red:#C81E1E; --red-50:#FBEDED;
+  --n50:#FAFAFA; --n100:#F3F3F4; --n200:#E9EAEB; --n300:#D5D7DA;
+  --n500:#717680; --n600:#535862;
+  --verde:#1F7A44; --verde-50:#E8F3EC;
+  --amarelo:#8A6A18; --amarelo-50:#F8F1DE;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  --serif:'Instrument Serif',Georgia,serif;
+  --s1:8px; --s2:16px; --s3:24px; --s4:32px; --s5:40px; --s6:48px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);color:var(--indigo);background:#fff;line-height:1.5;
+  -webkit-font-smoothing:antialiased;font-size:15px}
+.wrap{max-width:1340px;margin:0 auto;padding:0 var(--s3)}
+
+/* ---------- topo compacto: isto e uma ferramenta, nao um folder ---------- */
+header{background:var(--indigo-900);color:#fff;padding:var(--s3) 0}
+header .wrap{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap}
+.logo{width:118px;flex:none}
+.logo svg{width:100%;height:auto;display:block}
+header h1{font-family:var(--serif);font-weight:400;font-size:21px;line-height:1.1;
+  border-left:1px solid var(--indigo-400);padding-left:var(--s3)}
+header h1 em{font-style:italic;color:var(--indigo-200);font-size:.82em}
+header .saldo{margin-left:auto;font-size:12px;color:var(--indigo-200);text-align:right;
+  font-variant-numeric:tabular-nums}
+header .saldo b{display:block;color:#fff;font-size:15px;font-weight:600}
+
+main{padding:var(--s5) 0 var(--s6)}
+h2{font-family:var(--serif);font-weight:400;font-size:23px;line-height:1.2}
+.kicker{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--n500);margin-bottom:6px}
+.dim{color:var(--n600)}
+.mini{font-size:13px;color:var(--n500)}
+
+/* ---------- entrada ---------- */
+.painel{border:1px solid var(--n200);border-radius:12px;overflow:hidden}
+.abas{display:flex;background:var(--n100);border-bottom:1px solid var(--n200)}
+.abas button{flex:none;font:inherit;font-size:14px;font-weight:500;color:var(--n600);
+  background:none;border:none;border-bottom:2px solid transparent;
+  padding:13px 22px;cursor:pointer;transition:.12s}
+.abas button:hover{color:var(--indigo);background:#fff}
+.abas button[aria-selected=true]{color:var(--indigo);background:#fff;
+  border-bottom-color:var(--red);font-weight:600}
+.aba-corpo{padding:var(--s3)}
+.aba-corpo[hidden]{display:none}
+textarea{width:100%;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;
+  line-height:1.6;padding:14px;border:1px solid var(--n300);border-radius:8px;resize:vertical;
+  min-height:170px;color:var(--indigo)}
+textarea:focus{outline:2px solid var(--indigo);outline-offset:1px;border-color:transparent}
+.dica{margin-top:10px;font-size:13px;color:var(--n500)}
+.dica code{background:var(--n100);padding:1px 6px;border-radius:4px;font-size:12px}
+
+#zona{border:2px dashed var(--n300);border-radius:10px;padding:var(--s5) var(--s3);
+  text-align:center;cursor:pointer;background:var(--n50);transition:.12s}
+#zona:hover,#zona.over{border-color:var(--red);background:var(--red-50)}
+#zona .grande{font-size:16px;font-weight:600}
+#zona .pequena{font-size:13px;color:var(--n500);margin-top:4px}
+input[type=file]{display:none}
+
+/* ---------- contexto do lote ---------- */
+.contexto{border-top:1px solid var(--n200);background:var(--n50);padding:var(--s3);
+  display:flex;gap:var(--s3);flex-wrap:wrap;align-items:flex-end}
+/* display:flex vence o [hidden] da folha do navegador — precisa dizer de novo */
+.contexto[hidden],.vendedora[hidden],.acao[hidden],.pag-lado[hidden]{display:none}
+/* .pag-lado ficava visivel com o PIX ja gerado: o botao Gerar PIX seguia ativo e
+   um segundo clique emitiria uma segunda cobranca. */
+.campo{display:flex;flex-direction:column;gap:5px}
+.campo label{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--n500)}
+.campo input,.campo select{font:inherit;font-size:14px;padding:9px 12px;
+  border:1px solid var(--n300);border-radius:7px;background:#fff;color:var(--indigo)}
+.campo input:focus,.campo select:focus{outline:2px solid var(--indigo);outline-offset:1px;
+  border-color:transparent}
+.campo.w-uf input{width:74px;text-transform:uppercase}
+.campo.w-of input{width:88px}
+.campo.w-mun input{width:190px}
+.campo.w-alvo select{width:290px}
+.contexto .obs{flex:1 1 210px;font-size:12px;color:var(--n500);min-width:180px;
+  align-self:center;padding-top:14px}
+
+/* ---------- barra de acao ---------- */
+.acao{border-top:1px solid var(--n200);padding:var(--s3);display:flex;gap:var(--s2);
+  align-items:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:9px;font:inherit;font-size:15px;font-weight:600;
+  padding:12px 22px;border-radius:999px;border:1.5px solid var(--indigo);
+  background:var(--indigo);color:#fff;cursor:pointer;text-decoration:none;transition:.12s;
+  white-space:nowrap}
+.btn:hover:not(:disabled){background:var(--indigo-900);border-color:var(--indigo-900)}
+.btn.ghost{background:transparent;color:var(--indigo)}
+.btn.ghost:hover:not(:disabled){background:var(--indigo-50)}
+.btn.pequeno{font-size:13px;padding:9px 16px}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.custo{font-size:13px;color:var(--n600);font-variant-numeric:tabular-nums}
+.custo b{color:var(--indigo);font-weight:600}
+
+/* ---------- progresso ---------- */
+.progresso{display:none;align-items:center;gap:14px;margin-left:auto}
+.progresso.on{display:flex}
+.barra{width:170px;height:6px;background:var(--n200);border-radius:99px;overflow:hidden}
+.barra i{display:block;height:100%;background:var(--red);width:0;transition:width .3s}
+
+/* ---------- tabela ---------- */
+.resultado{margin-top:var(--s5)}
+.resultado[hidden]{display:none}
+.cabeca{display:flex;align-items:flex-end;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s2)}
+.cabeca .btns{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+.ponto{width:9px;height:9px;border-radius:99px;flex:none}
+.ponto.v{background:var(--verde)} .ponto.r{background:var(--red)}
+.ponto.c{background:var(--n300)} .ponto.a{background:var(--amarelo)}
+
+.rolagem{overflow-x:auto;border:1px solid var(--n200);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead th{position:sticky;top:0;background:var(--n100);text-align:left;font-size:10.5px;
+  font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--n500);
+  padding:11px 14px;border-bottom:1px solid var(--n200);white-space:nowrap;z-index:1}
+tbody td{padding:12px 14px;border-bottom:1px solid var(--n200);vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--n50)}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+td.dono{min-width:250px;font-weight:500}
+td.dono small{display:block;font-weight:400;color:var(--n500);font-size:12px;
+  font-variant-numeric:tabular-nums;margin-top:2px}
+td.fund{color:var(--n600);font-size:12.5px;max-width:270px}
+td.sit{white-space:nowrap}
+tr.linha-erro td{background:var(--red-50)}
+tr.linha-pend td{background:var(--n50)}
+
+.tag{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;
+  letter-spacing:.04em;text-transform:uppercase;padding:4px 11px;border-radius:999px;
+  border:1px solid currentColor;white-space:nowrap}
+.tag.v{color:var(--verde);background:var(--verde-50)}
+.tag.r{color:var(--red);background:var(--red-50)}
+.tag.c{color:var(--n600);background:var(--n100)}
+.tag.a{color:var(--amarelo);background:var(--amarelo-50)}
+.tag .ponto{background:currentColor}
+
+.girando{display:inline-block;width:13px;height:13px;border:2px solid var(--n300);
+  border-top-color:var(--indigo);border-radius:99px;animation:gira .7s linear infinite;
+  vertical-align:-2px;margin-right:7px}
+@keyframes gira{to{transform:rotate(360deg)}}
+
+.nota{margin-top:var(--s3);font-size:13px;color:var(--n600);max-width:82ch}
+.nota b{color:var(--indigo)}
+.aviso{background:var(--amarelo-50);border-left:3px solid var(--amarelo);padding:14px 18px;
+  margin-top:var(--s3);font-size:13.5px;color:var(--n600);border-radius:0 7px 7px 0}
+.aviso b{color:var(--indigo)}
+.erro-caixa{background:var(--red-50);border-left:3px solid var(--red);padding:14px 18px;
+  margin-top:var(--s3);font-size:13.5px;color:var(--n600);border-radius:0 7px 7px 0}
+.erro-caixa b{color:var(--red)}
+
+footer{border-top:1px solid var(--n200);margin-top:var(--s6);padding:var(--s3) 0 var(--s5);
+  font-size:12px;color:var(--n500)}
+footer .wrap{display:flex;justify-content:space-between;gap:var(--s3);flex-wrap:wrap}
+footer .site{letter-spacing:.16em;text-transform:uppercase}
+
+@media(max-width:820px){
+  header h1{border:none;padding-left:0;font-size:18px;width:100%}
+  header .saldo{margin-left:0}
+  .campo.w-mun input,.campo.w-alvo select{width:100%}
+  .campo{flex:1 1 140px}
+}
+
+
+/* ---------- a pergunta, dita antes de qualquer campo ---------- */
+.chamada{font-family:var(--serif);font-size:clamp(21px,3vw,27px);line-height:1.3;
+  max-width:40ch;margin-bottom:var(--s3);color:var(--indigo)}
+
+/* ---------- consulta de um imovel so ---------- */
+.linha-unica{display:flex;gap:var(--s2);flex-wrap:wrap;align-items:flex-end}
+.campo.cresce{flex:1 1 190px}
+.campo.cresce input{width:100%}
+.linha-unica .campo input{font-size:16px;padding:12px 14px}
+
+/* ---------- empresa vendedora ---------- */
+.vendedora{border-top:1px solid var(--n200);background:var(--n50);
+  padding:12px var(--s3);font-size:13px;color:var(--n600);
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.vendedora b{color:var(--indigo);font-weight:600}
+.link{font:inherit;font-size:13px;background:none;border:none;padding:0;cursor:pointer;
+  color:var(--indigo);text-decoration:underline;text-underline-offset:3px}
+.vendedora select{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--n300);
+  border-radius:6px;background:#fff;color:var(--indigo);max-width:100%}
+
+/* ---------- cartao de um imovel so ---------- */
+#cartao{margin-top:var(--s5)}
+#cartao[hidden]{display:none}
+.veredito{border:1px solid var(--n200);border-radius:14px;overflow:hidden}
+.veredito .faixa{padding:var(--s3) var(--s4);display:flex;align-items:center;gap:14px;
+  font-size:clamp(17px,2.6vw,23px);font-weight:600;letter-spacing:-.01em;line-height:1.2}
+.veredito .faixa i{width:14px;height:14px;border-radius:99px;flex:none;background:currentColor}
+.veredito.r .faixa{background:var(--red-50);color:var(--red)}
+.veredito.v .faixa{background:var(--verde-50);color:var(--verde)}
+.veredito.c .faixa{background:var(--n100);color:var(--n600)}
+.veredito.a .faixa{background:var(--amarelo-50);color:var(--amarelo)}
+.veredito .corpo{padding:var(--s4);display:grid;gap:var(--s3);
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.veredito .bloco b{display:block;font-size:11px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--n500);margin-bottom:5px}
+.veredito .bloco p{font-size:15px;color:var(--indigo);max-width:52ch}
+.veredito .bloco p.doc{font-size:13px;color:var(--n600);font-variant-numeric:tabular-nums}
+.veredito .rodape{padding:14px var(--s4);border-top:1px solid var(--n200);background:var(--n50);
+  font-size:13px;color:var(--n600)}
+
+#legenda[hidden]{display:none}
+#legenda .nota .tag{margin:0 3px}
+
+/* ---------- espera longa, dita onde se espera ---------- */
+.relogio{font-variant-numeric:tabular-nums;font-weight:500;opacity:.65;font-size:.82em}
+.veredito .espera{padding:0 var(--s4) var(--s3)}
+.veredito .espera p{font-size:14px;color:var(--n600);max-width:70ch;line-height:1.5;
+  margin-top:12px}
+.espera-barra{height:6px;background:var(--n200);border-radius:99px;overflow:hidden}
+.espera-barra i{display:block;height:100%;width:0;border-radius:99px;
+  background:var(--indigo);transition:width .5s linear}
+#tempoTotal{color:var(--verde);font-weight:500}
+
+
+/* ---------- etapa de pagamento ---------- */
+#pagamento[hidden]{display:none}
+#pagamento{margin-top:var(--s5)}
+.pag{border:1px solid var(--n200);border-radius:12px;overflow:hidden}
+.pag-cab{padding:var(--s3) var(--s4);border-bottom:1px solid var(--n200);background:var(--n50)}
+.pag-corpo{padding:var(--s4);display:grid;gap:var(--s4);
+  grid-template-columns:minmax(280px,1fr) minmax(260px,320px)}
+@media(max-width:820px){.pag-corpo{grid-template-columns:1fr}}
+.pag-conta table{width:100%;border-collapse:collapse}
+.pag-conta td{padding:7px 0;font-size:15px}
+.pag-conta td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.pag-conta tr.total td{border-top:1.5px solid var(--indigo);padding-top:12px;
+  font-size:20px;font-weight:600}
+.pag-conta .obs{margin-top:var(--s2);font-size:12.5px;color:var(--n500);max-width:52ch}
+.pag-lado{display:flex;flex-direction:column;gap:14px}
+.pag-lado .campo input{width:100%}
+.pag-pix{display:flex;gap:var(--s3);flex-wrap:wrap;align-items:flex-start}
+.pag-pix[hidden]{display:none}
+.pag-pix #pagQr{width:172px;height:172px;border:1px solid var(--n200);border-radius:8px;
+  background:#fff;flex:none;display:flex;align-items:center;justify-content:center;padding:8px}
+.pag-pix #pagQr img,.pag-pix #pagQr canvas{width:100%;height:100%;display:block}
+.pag-pix #pagQr:empty{display:none}
+.pag-copia{flex:1 1 220px;display:flex;flex-direction:column;gap:8px}
+.pag-copia label{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--n500)}
+.pag-copia textarea{font-size:11.5px;min-height:0;line-height:1.4;padding:10px}
+
+
+/* ---------- fila de trabalho: o resultado agrupado pela acao que pede ---------- */
+.fila-busca{margin:var(--s2) 0 var(--s3)}
+.fila-busca input{width:100%;max-width:480px;font:inherit;font-size:14px;padding:10px 14px;
+  border:1px solid var(--n300);border-radius:8px;background:#fff;color:var(--indigo)}
+.fila-busca input:focus{outline:2px solid var(--indigo);outline-offset:1px;border-color:transparent}
+.fila-busca .mini{margin-top:8px}
+
+.grupo{border:1px solid var(--n200);border-radius:10px;margin-bottom:var(--s2);overflow:hidden}
+.grupo[hidden]{display:none}
+.grupo-r{border-left:3px solid var(--red)}
+.grupo-a{border-left:3px solid var(--amarelo)}
+.grupo-v{border-left:3px solid var(--verde)}
+.grupo-c{border-left:3px solid var(--n300)}
+.grupo summary{cursor:pointer;list-style:none;padding:14px var(--s3);font-weight:600;display:flex;
+  align-items:center;gap:10px;background:var(--n50);font-size:15px;color:var(--indigo)}
+.grupo summary::-webkit-details-marker{display:none}
+.grupo summary::before{content:'▸';color:var(--n500)}
+.grupo[open] summary::before{content:'▾'}
+.grupo .rolagem{border:none;border-top:1px solid var(--n200);border-radius:0}
+
+.contagem{font-variant-numeric:tabular-nums;font-size:12.5px;font-weight:600;padding:2px 10px;
+  border-radius:999px;background:var(--n100);color:var(--n600)}
+.contagem.r{color:var(--red);background:var(--red-50)}
+.contagem.v{color:var(--verde);background:var(--verde-50)}
+.contagem.a{color:var(--amarelo);background:var(--amarelo-50)}
+
+tr.vazio td{color:var(--n500);font-style:italic;cursor:default}
+tr[data-chave]{cursor:pointer}
+td.dono .motivo{display:block;font-weight:400;color:var(--amarelo);font-size:12px;margin-top:2px}
+td.dono .detalhe{margin-top:6px;padding-top:6px;border-top:1px dashed var(--n200)}
+td.dono .detalhe small{display:block;font-weight:400;color:var(--n600);font-size:12px;margin-top:2px}
+tr:not(.aberta) .detalhe{display:none}
+tr[data-chave]:not(.aberta) td.dono::after{content:'detalhes ▸';display:block;font-size:11.5px;
+  font-weight:400;color:var(--n500);margin-top:4px}
+tr.aberta td{background:var(--n50)}
+
+#legenda details summary{cursor:pointer;font-weight:600;color:var(--indigo);list-style:none;
+  margin-top:var(--s3);font-size:14px}
+#legenda details summary::-webkit-details-marker{display:none}
+#legenda details summary::before{content:'▸ ';color:var(--n500)}
+#legenda details[open] summary::before{content:'▾ '}
+
+/* ---------- layout: painel + assistente fixo ---------- */
+.app{display:grid;grid-template-columns:minmax(0,1fr) 380px;align-items:start}
+.app.recolhido{grid-template-columns:minmax(0,1fr) 56px}
+.app-principal{min-width:0}
+
+/* ---------- etapas: so mostram onde se esta, nao navegam ---------- */
+.etapas{display:flex;gap:6px;list-style:none;margin:0 0 var(--s2);flex-wrap:wrap}
+.etapas li{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--n500);
+  padding:5px 14px 5px 5px;border-radius:999px;background:var(--n100)}
+.etapas li span{width:22px;height:22px;border-radius:99px;display:inline-flex;align-items:center;
+  justify-content:center;font-size:12px;font-weight:600;background:#fff;color:var(--n500);border:1px solid var(--n300)}
+.etapas li.atual{color:var(--indigo);background:var(--indigo-50);font-weight:600}
+.etapas li.atual span{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+.etapas li.feito{color:var(--verde)}
+.etapas li.feito span{font-size:0;background:var(--verde-50);border-color:var(--verde)}
+.etapas li.feito span::before{content:'✓';font-size:12px;color:var(--verde)}
+
+/* ---------- assistente ---------- */
+.chat{position:sticky;top:0;height:100vh;background:#fff;border-left:1px solid var(--n200);
+  display:flex;flex-direction:column;z-index:30}
+.chat-cab{display:flex;align-items:center;gap:10px;padding:14px 18px;background:var(--indigo-900);color:#fff;font-size:15px}
+.chat-titulo{flex:1;min-width:0}
+.chat-cab .link{color:var(--indigo-100);white-space:nowrap}
+.chat-ultima{display:none}
+.selo{min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:var(--red);color:#fff;
+  font-size:11.5px;font-weight:600;display:inline-flex;align-items:center;justify-content:center}
+.selo[hidden]{display:none}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:88%;padding:9px 13px;border-radius:12px;font-size:14px;line-height:1.45;overflow-wrap:anywhere}
+.msg.eu{align-self:flex-end;background:var(--indigo);color:#fff;border-bottom-right-radius:4px}
+.msg.ia{align-self:flex-start;background:var(--n100);color:var(--indigo);border-bottom-left-radius:4px}
+.msg.cartao{max-width:100%}
+.msg.aviso{align-self:stretch;max-width:none;background:var(--amarelo-50);color:var(--n600);font-size:13px}
+.msg .acoes{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.acao-chat{font:inherit;font-size:13px;font-weight:500;padding:6px 12px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--indigo);background:#fff;color:var(--indigo)}
+.acao-chat.principal{background:var(--indigo);color:#fff}
+.acao-chat.sugestao{border-color:var(--n300);font-weight:400}
+.acao-chat:disabled{opacity:.45;cursor:not-allowed}
+.msg .tag{margin-left:4px}
+.lista-grupos{list-style:none;margin-top:6px;display:grid;gap:3px}
+.lista-grupos li{display:flex;align-items:center;gap:8px}
+.pix-chat img{width:168px;height:168px;display:block;margin:10px 0 6px;border:1px solid var(--n200);
+  border-radius:8px;background:#fff;padding:6px}
+.chat-nota{padding:8px 16px 0;font-size:11.5px;color:var(--n500);border-top:1px solid var(--n200)}
+.chat-form{display:flex;gap:8px;padding:10px 14px 14px;align-items:flex-end}
+.chat-form textarea{flex:1;min-width:0;min-height:0;height:42px;max-height:150px;resize:none;font-family:var(--sans);
+  font-size:14px;line-height:1.4;padding:10px 12px;border-radius:10px}
+.chat-anexo{flex:none;width:40px;height:42px;border:1px solid var(--n300);border-radius:10px;background:#fff;
+  color:var(--indigo);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.chat-anexo:hover{background:var(--indigo-50)}
+.chat.soltando .chat-msgs{outline:2px dashed var(--red);outline-offset:-8px;background:var(--red-50)}
+/* recolhido no computador: uma faixa com o titulo e o selo */
+.chat.recolhido > :not(.chat-cab){display:none}
+.chat.recolhido .chat-cab{flex-direction:column;height:100%;padding:16px 8px;gap:14px;cursor:pointer}
+.chat.recolhido .chat-titulo{flex:none;writing-mode:vertical-rl;transform:rotate(180deg)}
+/* celular e tela estreita: barra fixa embaixo; toque abre em tela cheia */
+@media (max-width:1099px){
+  .app,.app.recolhido{display:block}
+  body{padding-bottom:64px}
+  .chat{position:fixed;left:0;right:0;bottom:0;top:auto;height:auto;border-left:0;
+    border-top:1px solid var(--n200);box-shadow:0 -6px 24px rgba(18,12,42,.14)}
+  .chat:not(.aberto) > :not(.chat-cab){display:none}
+  .chat:not(.aberto) .chat-cab{cursor:pointer}
+  .chat:not(.aberto) .chat-titulo{flex:none}
+  .chat:not(.aberto) .chat-ultima{display:block;flex:1;min-width:0;font-size:13px;color:var(--indigo-100);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chat.aberto{top:0}
+  body.chat-tela-cheia{overflow:hidden}
+}
+#zona.travada{pointer-events:none;opacity:.5}
+.abas button:disabled,.campo input:disabled,textarea:disabled{opacity:.55;cursor:not-allowed}
+.aviso-trava{margin:10px 0 0;color:var(--n500)}
+.aviso-texto{color:var(--amarelo)}
+/* Safari no iPhone amplia a tela ao focar campo com fonte abaixo de 16px */
+@media (max-width:768px){.campo input,.campo select,.fila-busca input,.chat-form input,textarea{font-size:16px}}
+/* telas pequenas: abas roláveis (a 4ª ficava cortada) e etapas mais compactas */
+@media (max-width:600px){
+  .abas{overflow-x:auto}
+  .abas button{padding:11px 13px;font-size:13px}
+  .etapas li{font-size:12px;padding:4px 10px 4px 4px}
+}
+</style>
+</head><body>
+
+<div class="app" id="app">
+<div class="app-principal">
+<header><div class="wrap">
+  <div class="logo"><svg viewBox="0 0 149 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_34_3)">
+<path d="M13.9449 0L3.27881 17.8301H9.65651L17.1337 5.27511L13.9449 0Z" fill="#FF4F4A"/>
+<path d="M17.1341 5.27496L27.8001 22.9995H21.5324L13.9805 10.5704L17.1341 5.27496Z" fill="#FF3724"/>
+<path d="M17.1337 5.27496L14.9345 12.1327L13.9448 10.5501L17.1337 5.27496Z" fill="#D92E1A"/>
+<path d="M3.27869 17.8303L0.199951 23H21.5319L18.3908 17.8303H3.27869Z" fill="#C6271A"/>
+<path d="M18.3429 17.8303H16.6912L21.5317 23L18.3429 17.8303Z" fill="#3A1317"/>
+</g>
+<g clip-path="url(#clip1_34_3)">
+<path d="M50.0619 21.6501V6.03313H54.0649V9.77977L53.7783 9.2368C54.1222 7.92156 54.6833 7.03468 55.4646 6.57616C56.264 6.09954 57.2081 5.86121 58.2972 5.86121H59.2112V9.58065H57.8658C56.816 9.58065 55.9684 9.90343 55.3198 10.552C54.6712 11.1825 54.3484 12.0784 54.3484 13.2398V21.647H50.0588L50.0619 21.6501Z" fill="white"/>
+<path d="M68.8161 21.994C67.7482 21.994 66.7557 21.8039 65.8417 21.4208C64.9458 21.0196 64.2218 20.4374 63.6667 19.6773L64.068 18.7904V21.6501H60.0649V0H64.3545V9.01055L63.6969 8.15384C64.2127 7.37253 64.9066 6.77225 65.7844 6.35294C66.6803 5.91554 67.6999 5.69535 68.8462 5.69535C70.3334 5.69535 71.6788 6.0573 72.8794 6.7813C74.08 7.5053 75.0333 8.4887 75.7391 9.72854C76.445 10.9502 76.7979 12.3228 76.7979 13.8462C76.7979 15.3696 76.445 16.724 75.7391 17.9638C75.0544 19.2036 74.1102 20.184 72.9066 20.911C71.706 21.635 70.3425 21.997 68.8161 21.997V21.994ZM68.3003 18.1327C69.0996 18.1327 69.8055 17.9518 70.4179 17.5898C71.0272 17.2278 71.5039 16.721 71.8477 16.0754C72.1916 15.4269 72.3636 14.6848 72.3636 13.8431C72.3636 13.0015 72.1916 12.2715 71.8477 11.641C71.5039 10.9925 71.0272 10.4887 70.4179 10.1237C69.8085 9.74359 69.1026 9.55054 68.3003 9.55054C67.4978 9.55054 66.8523 9.73151 66.2399 10.0935C65.6487 10.4555 65.1811 10.9623 64.8372 11.6108C64.5144 12.2594 64.3515 13.0015 64.3515 13.8431C64.3515 14.6848 64.5144 15.4269 64.8372 16.0754C65.1811 16.724 65.6487 17.2278 66.2399 17.5898C66.8492 17.9518 67.537 18.1327 68.3003 18.1327Z" fill="white"/>
+<path d="M78.2791 21.6501V6.03314H82.5687V21.6501H78.2791ZM78.2791 4.63347V0.343872H82.5687V4.63347H78.2791Z" fill="white"/>
+<path d="M92.2004 21.822C90.312 21.822 88.846 21.3152 87.7963 20.3047C86.7676 19.276 86.2518 17.8461 86.2518 16.015V9.75261H83.6213V6.03317H83.7631C84.5625 6.03317 85.1749 5.83405 85.5942 5.43284C86.0316 5.03163 86.2518 4.43133 86.2518 3.63194V2.48865H90.5412V6.03615H94.2034V9.75565H90.5412V15.7345C90.5412 16.2684 90.6379 16.7179 90.8278 17.0799C91.0183 17.4238 91.3138 17.6802 91.7149 17.8522C92.1161 18.0241 92.6105 18.1086 93.2022 18.1086C93.3348 18.1086 93.4887 18.0995 93.6606 18.0814C93.8326 18.0633 94.0135 18.0422 94.2034 18.0241V21.6561C93.9168 21.6953 93.5943 21.7315 93.2319 21.7707C92.8701 21.8099 92.5263 21.828 92.2038 21.828L92.2004 21.822Z" fill="white"/>
+<path d="M95.685 21.6501V6.03313H99.6876V9.77977L99.4011 9.2368C99.7449 7.92156 100.306 7.03468 101.088 6.57616C101.887 6.09954 102.831 5.86121 103.92 5.86121H104.834V9.58065H103.489C102.439 9.58065 101.591 9.90343 100.943 10.552C100.294 11.1825 99.9714 12.0784 99.9714 13.2398V21.647H95.6816L95.685 21.6501Z" fill="white"/>
+<path d="M110.523 21.9939C109.398 21.9939 108.427 21.813 107.606 21.451C106.785 21.089 106.158 20.5731 105.718 19.9065C105.28 19.2187 105.06 18.4102 105.06 17.4751C105.06 16.5973 105.26 15.825 105.661 15.1584C106.062 14.4706 106.671 13.9004 107.492 13.4419C108.33 12.9834 109.371 12.6606 110.611 12.4706L115.386 11.6983V14.8446L111.383 15.5595C110.774 15.6742 110.306 15.8733 109.98 16.1599C109.658 16.4283 109.495 16.8175 109.495 17.3333C109.495 17.81 109.676 18.181 110.037 18.4495C110.4 18.7179 110.849 18.8507 111.383 18.8507C112.089 18.8507 112.707 18.6968 113.241 18.3922C113.775 18.0875 114.186 17.6772 114.472 17.1614C114.777 16.6274 114.931 16.0453 114.931 15.4178V11.3575C114.931 10.7662 114.692 10.2715 114.215 9.87025C113.757 9.46909 113.13 9.26997 112.327 9.26997C111.525 9.26997 110.888 9.48111 110.297 9.90042C109.724 10.3197 109.305 10.8718 109.039 11.5596L105.606 9.93059C105.911 9.05276 106.397 8.30162 107.063 7.67117C107.73 7.04072 108.532 6.55505 109.464 6.21115C110.4 5.86724 111.419 5.69531 112.526 5.69531C113.842 5.69531 115.006 5.93359 116.017 6.41021C117.027 6.88688 117.808 7.55352 118.361 8.41326C118.934 9.25188 119.217 10.2353 119.217 11.3604V21.6561H115.214V19.1403L116.185 18.9683C115.727 19.6561 115.223 20.2263 114.671 20.6847C114.119 21.1222 113.498 21.4479 112.813 21.6561C112.128 21.8853 111.365 22 110.526 22L110.523 21.9939Z" fill="white"/>
+<path d="M39.1176 21.9487C37.9924 21.9487 37.0211 21.7677 36.2005 21.4057C35.38 21.0437 34.7526 20.5279 34.3122 19.8613C33.8748 19.1735 33.6545 18.365 33.6545 17.4299C33.6545 16.552 33.8536 15.7798 34.2548 15.1131C34.656 14.4253 35.2654 13.8552 36.0859 13.3967C36.9245 12.9382 37.9653 12.6154 39.2051 12.4254L43.9803 11.6531V14.7994L39.9773 15.5144C39.368 15.629 38.9004 15.828 38.5746 16.1146C38.2518 16.3832 38.0889 16.7723 38.0889 17.2881C38.0889 17.7647 38.2699 18.1358 38.6319 18.4042C38.9939 18.6727 39.4434 18.8055 39.9773 18.8055C40.6832 18.8055 41.3016 18.6516 41.8355 18.3469C42.3695 18.0422 42.7798 17.632 43.0663 17.1161C43.371 16.5822 43.5248 16 43.5248 15.3726V11.3122C43.5248 10.721 43.2866 10.2262 42.8099 9.82508C42.3514 9.42386 41.7239 9.22474 40.9215 9.22474C40.1191 9.22474 39.4826 9.43588 38.8913 9.85519C38.3182 10.2745 37.8989 10.8266 37.6334 11.5143L34.2005 9.88536C34.5052 9.00753 34.9909 8.25645 35.6576 7.62594C36.3242 6.99549 37.1266 6.50983 38.0588 6.16592C38.9939 5.82201 40.0135 5.65009 41.1206 5.65009C42.4359 5.65009 43.6002 5.88842 44.6108 6.36504C45.6214 6.84166 46.4027 7.50829 46.9547 8.36803C47.5278 9.20665 47.8114 10.1901 47.8114 11.3153V21.6109H43.8084V19.095L44.7797 18.9231C44.3212 19.6109 43.8174 20.181 43.2654 20.6396C42.7134 21.077 42.0919 21.4027 41.4072 21.6109C40.7224 21.8401 39.9592 21.9548 39.1206 21.9548L39.1176 21.9487Z" fill="#FF4F4A"/>
+<path d="M121.335 21.6501V0H125.625V21.6501H121.335Z" fill="white"/>
+<path d="M127.733 21.6501V6.03314H132.023V21.6501H127.733ZM127.733 4.63347V0.343872H132.023V4.63347H127.733Z" fill="white"/>
+<path d="M140.255 21.9939C138.538 21.9939 137.042 21.5927 135.763 20.7933C134.505 19.9728 133.646 18.8778 133.19 17.5053L136.337 16.018C136.738 16.8567 137.28 17.5143 137.965 17.9909C138.653 18.4675 139.413 18.7058 140.255 18.7058C140.864 18.7058 141.332 18.5822 141.658 18.3348C141.98 18.0874 142.143 17.7435 142.143 17.3061C142.143 17.0769 142.086 16.8868 141.971 16.733C141.857 16.5611 141.685 16.4102 141.456 16.2745C141.226 16.1418 140.94 16.0271 140.599 15.9306L137.938 15.1885C136.662 14.8265 135.679 14.2443 134.994 13.4449C134.306 12.6244 133.966 11.6621 133.966 10.555C133.966 9.58369 134.213 8.73299 134.707 8.00899C135.202 7.28505 135.899 6.72089 136.795 6.32271C137.691 5.9034 138.719 5.69226 139.884 5.69226C141.41 5.69226 142.744 6.05426 143.887 6.77826C145.049 7.48411 145.869 8.48561 146.345 9.78275L143.172 11.27C142.943 10.6214 142.524 10.1055 141.914 9.72544C141.323 9.32422 140.647 9.12516 139.884 9.12516C139.332 9.12516 138.891 9.23978 138.569 9.46901C138.264 9.6983 138.11 10.012 138.11 10.4133C138.11 10.6244 138.168 10.8144 138.282 10.9864C138.397 11.1583 138.578 11.3092 138.825 11.4449C139.094 11.5776 139.417 11.7013 139.796 11.816L142.285 12.561C143.582 12.9411 144.572 13.5233 145.259 14.3046C145.947 15.0678 146.291 16.012 146.291 17.1372C146.291 18.1086 146.035 18.9592 145.519 19.6832C145.024 20.4072 144.327 20.9804 143.432 21.3997C142.535 21.8009 141.477 21.9999 140.258 21.9999L140.255 21.9939Z" fill="white"/>
+<path d="M127.772 0.220215H131.996V2.48266V4.74511H127.772V0.220215Z" fill="#FF4F4A"/>
+<path d="M78.3 0.220215H82.8249V2.48266V4.74511H78.3V0.220215Z" fill="#FF4F4A"/>
+</g>
+<defs>
+<clipPath id="clip0_34_3">
+<rect width="28" height="23" fill="white"/>
+</clipPath>
+<clipPath id="clip1_34_3">
+<rect width="118" height="22" fill="white" transform="translate(31)"/>
+</clipPath>
+</defs>
+</svg></div>
+  <h1>Já saiu do nosso nome? <em>— verificação registral</em></h1>
+</div></header>
+
+<main><div class="wrap">
+
+  <p class="chamada">Verifique se o comprador já registrou a transferência no cartório.</p>
+
+  <ol class="etapas" id="etapas" aria-label="Etapas da verificação">
+    <li data-etapa="1"><span>1</span>Enviar imóveis</li>
+    <li data-etapa="2"><span>2</span>Pagar</li>
+    <li data-etapa="3"><span>3</span>Resultado</li>
+  </ol>
+
+  <section class="painel">
+    <div class="abas" role="tablist">
+      <button role="tab" aria-selected="true"  data-aba="unica">Um imóvel</button>
+      <button role="tab" aria-selected="false" data-aba="lista">Vários</button>
+      <button role="tab" aria-selected="false" data-aba="csv">Planilha</button>
+    </div>
+
+    <div class="aba-corpo" data-corpo="unica">
+      <div class="linha-unica">
+        <div class="campo cresce"><label for="uMat">Matrícula</label>
+          <input id="uMat" inputmode="numeric" placeholder="11695" autocomplete="off"></div>
+        <div class="campo w-uf"><label for="uUf">UF</label>
+          <input id="uUf" maxlength="2" placeholder="PA" autocomplete="off"></div>
+        <div class="campo cresce"><label for="uMun">Município</label>
+          <input id="uMun" placeholder="Belém" autocomplete="off"></div>
+        <div class="campo w-of"><label for="uOf">Ofício</label>
+          <input id="uOf" placeholder="3" autocomplete="off"></div>
+      </div>
+      <p class="dica">Ofício = número do Registro de Imóveis onde está a matrícula (ex.: 3º Ofício).</p>
+    </div>
+
+    <div class="aba-corpo" data-corpo="lista" hidden>
+      <textarea id="txtLista" spellcheck="false" placeholder="Cole os imóveis do jeito que estiverem:&#10;&#10;11695 PA Belém 3&#10;11687 PA Belém 3&#10;&#10;ou o trecho do e-mail, com TRIB, empreendimento e vaga"></textarea>
+      <p class="dica">Uma matrícula por linha ou o trecho do e-mail como veio.</p>
+      <p class="dica aviso-texto" id="avisoTexto" hidden>Não reconheci nenhum imóvel. Use uma matrícula por linha
+        (ex.: 11695 PA Belém 3) ou cole o trecho do e-mail com a referência (ex.: TRIB.031724/2022).</p>
+    </div>
+
+    <div class="aba-corpo" data-corpo="csv" hidden>
+      <div id="zona">
+        <input type="file" id="arq" accept=".csv,.txt,.xlsx,.xls,text/csv,text/plain">
+        <p class="grande">Arraste a planilha aqui ou clique para escolher</p>
+        <p class="pequena">Precisa ter uma coluna <b>matricula</b>. As outras são opcionais.</p>
+      </div>
+      <p class="dica" style="margin-top:14px">
+        <a href="#" id="modelo">Baixar modelo</a> · <span id="nomeArq"></span></p>
+    </div>
+
+    <div class="contexto" id="contexto" hidden>
+      <div class="campo w-uf"><label for="ctxUf">UF</label>
+        <input id="ctxUf" maxlength="2" placeholder="PA" autocomplete="off"></div>
+      <div class="campo w-mun"><label for="ctxMun">Município</label>
+        <input id="ctxMun" placeholder="Belém" autocomplete="off"></div>
+      <div class="campo w-of"><label for="ctxOf">Ofício</label>
+        <input id="ctxOf" placeholder="3" autocomplete="off"></div>
+      <p class="obs">Vale só para as linhas que não trouxerem o próprio local.</p>
+    </div>
+
+    <div class="acao">
+      <button class="btn" id="btnVerificar" disabled>Verificar</button>
+      <button class="btn ghost pequeno" id="btnLimpar">Limpar</button>
+      <span class="custo" id="custo"></span>
+      <span class="custo" id="tempoTotal"></span>
+      <div class="progresso" id="progresso">
+        <div class="barra"><i id="barraFill"></i></div>
+        <span class="mini" id="progressoTxt"></span>
+        <button class="btn ghost pequeno" id="btnParar">Parar</button>
+      </div>
+    </div>
+
+    <p class="mini aviso-trava" id="avisoTrava" hidden>Lista travada enquanto há cobrança em aberto ou consulta
+      em andamento. Para montar outra lista, use Limpar.</p>
+
+    <div class="vendedora">
+      <span>Comparando com <b id="alvoNome">—</b></span>
+      <button class="link" id="trocarAlvo">trocar</button>
+      <select id="alvo" hidden></select>
+      <span class="mini" id="avisoAlvo" hidden>para comparar com outra empresa, use Limpar</span>
+    </div>
+    <p class="mini aviso-texto" id="avisoRetomada" hidden></p>
+  </section>
+
+  <div id="caixaAcesso"></div>
+  <div id="caixaErro"></div>
+
+  <!-- etapa de pagamento: entra entre a conferência e a consulta -->
+  <section id="pagamento" hidden>
+    <div class="pag">
+      <div class="pag-cab">
+        <p class="kicker">Pagamento</p>
+        <h2 id="pagTitulo">Confirme o lote e pague para liberar a consulta</h2>
+      </div>
+
+      <div class="pag-corpo">
+        <div class="pag-conta" id="pagConta"></div>
+
+        <div class="pag-lado" id="pagLado">
+          <div class="campo"><label for="pagNome">Razão social do pagador</label>
+            <input id="pagNome" autocomplete="organization" placeholder="Cyrela ..."></div>
+          <div class="campo"><label for="pagDoc">CNPJ</label>
+            <input id="pagDoc" inputmode="numeric" placeholder="00.000.000/0001-00"></div>
+          <button class="btn" id="btnCobrar">Gerar PIX</button>
+          <p class="mini">Nada é consultado antes do pagamento. Emolumentos são
+            repassados aos cartórios sem acréscimo.</p>
+        </div>
+
+        <div class="pag-pix" id="pagPix" hidden>
+          <div id="pagQr" aria-label="QR Code do PIX"></div>
+          <div class="pag-copia">
+            <label for="pagPayload">PIX copia e cola</label>
+            <textarea id="pagPayload" readonly rows="3"></textarea>
+            <button class="btn ghost pequeno" id="btnCopiar">Copiar código</button>
+            <p class="mini" id="pagEstado"><span class="girando"></span>aguardando o pagamento…</p>
+            <p class="mini"><a id="pagFatura" href="#" target="_blank" rel="noopener">abrir a fatura</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- resultado de um imóvel só -->
+  <section id="cartao" hidden></section>
+
+  <!-- resultado em volume -->
+  <section class="resultado" id="resultado" hidden>
+    <div class="cabeca">
+      <div>
+        <p class="kicker">Resultado</p>
+        <h2>Situação de cada imóvel</h2>
+      </div>
+      <div class="btns">
+        <button class="btn ghost pequeno" id="btnCsv">Baixar CSV</button>
+        <button class="btn ghost pequeno" id="btnXlsx">Baixar Excel</button>
+      </div>
+    </div>
+
+    <div class="fila-busca">
+      <input type="search" id="buscaFila" autocomplete="off"
+        placeholder="Buscar por referência, matrícula, empreendimento ou endereço">
+      <p class="mini" id="buscaVazia" hidden>Nada encontrado.</p>
+    </div>
+
+    <div id="filaGrupos">
+    <details class="grupo grupo-c" id="grpAndamento" open hidden>
+      <summary>Ainda não verificado <span class="contagem c" id="cntAndamento">0</span></summary>
+      <div class="rolagem"><table>
+        <thead><tr><th>Referência</th><th>Matrícula</th><th>Imóvel</th><th>Em nome de quem está hoje</th><th>Situação</th></tr></thead>
+        <tbody id="corpoAndamento"></tbody>
+      </table></div>
+    </details>
+    <details class="grupo grupo-r" id="grpAcao" open>
+      <summary>Ação necessária <span class="contagem r" id="cntAcao">0</span></summary>
+      <div class="rolagem"><table>
+        <thead><tr><th>Referência</th><th>Matrícula</th><th>Imóvel</th><th>Em nome de quem está hoje</th><th>Situação</th></tr></thead>
+        <tbody id="corpoAcao"></tbody>
+      </table></div>
+    </details>
+    <details class="grupo grupo-c" id="grpConsultado" open hidden>
+      <summary>Proprietário identificado <span class="contagem c" id="cntConsultado">0</span></summary>
+      <div class="rolagem"><table>
+        <thead><tr><th>Referência</th><th>Matrícula</th><th>Imóvel</th><th>Em nome de quem está hoje</th><th>Situação</th></tr></thead>
+        <tbody id="corpoConsultado"></tbody>
+      </table></div>
+    </details>
+    <details class="grupo grupo-a" id="grpRevisar" open>
+      <summary>Revisar <span class="contagem a" id="cntRevisar">0</span></summary>
+      <div class="rolagem"><table>
+        <thead><tr><th>Referência</th><th>Matrícula</th><th>Imóvel</th><th>Em nome de quem está hoje</th><th>Situação</th></tr></thead>
+        <tbody id="corpoRevisar"></tbody>
+      </table></div>
+    </details>
+    <details class="grupo grupo-v" id="grpResolvido">
+      <summary>Resolvidos <span class="contagem v" id="cntResolvido">0</span></summary>
+      <div class="rolagem"><table>
+        <thead><tr><th>Referência</th><th>Matrícula</th><th>Imóvel</th><th>Em nome de quem está hoje</th><th>Situação</th></tr></thead>
+        <tbody id="corpoResolvido"></tbody>
+      </table></div>
+    </details>
+    </div>
+  </section>
+
+  <section id="legenda" hidden>
+    <details id="legendaAberta"><summary>Como ler as situações</summary>
+    <p class="nota">
+      <span class="tag r"><i class="ponto"></i>Ainda no nome de vocês</span> — a transferência
+      não foi registrada; a exposição continua.
+      <span class="tag v"><i class="ponto"></i>Já transferido</span> — o comprador registrou;
+      o imóvel saiu do nome de vocês.
+      <span class="tag c"><i class="ponto"></i>Indeterminado</span> — algo no registro impede
+      resposta segura (documento incompleto, alienação fiduciária, fração ideal). Esses pedem
+      leitura humana e vêm com o motivo escrito.</p>
+    <p class="nota">Trabalhamos sobre a visualização de matrícula do RI Digital, que não tem fé
+      pública e reflete o registro com a defasagem própria do serviço. Para uso perante terceiros,
+      a certidão de inteiro teor é o documento adequado.</p>
+    </details>
+  </section>
+
+</div></main>
+
+<footer><div class="wrap">
+  <p><b>Arbitralis S.A.</b> · CNPJ 39.598.937/0001-46 ·
+     Rua Rio Grande do Norte, 1.435, sala 708, Savassi, Belo Horizonte/MG</p>
+  <span class="site">arbitralis.com.br</span>
+</div></footer>
+
+</div><!-- app-principal -->
+
+<!-- assistente: fixo e aberto no computador; barra embaixo no celular -->
+<aside class="chat" id="chat" aria-label="Assistente">
+  <div class="chat-cab" id="chatCab">
+    <div class="chat-titulo"><b>Assistente</b></div>
+    <span class="chat-ultima" id="chatUltima">O que você quer consultar?</span>
+    <span class="selo" id="chatSelo" hidden></span>
+    <button type="button" class="link" id="chatRecolher" aria-controls="chat" aria-expanded="true">recolher</button>
+  </div>
+  <div class="chat-msgs" id="chatMsgs"></div>
+  <p class="chat-nota">O assistente pode errar. A tabela da tela é a referência.</p>
+  <form class="chat-form" id="chatForm">
+    <button type="button" class="chat-anexo" id="chatAnexo" title="Enviar planilha" aria-label="Enviar planilha">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+    </button>
+    <input type="file" id="chatArq" accept=".csv,.txt,.xlsx,.xls,text/csv,text/plain">
+    <textarea id="chatTexto" rows="1" autocomplete="off" spellcheck="false"
+      placeholder="O que você quer consultar?"></textarea>
+    <button class="btn pequeno" id="chatEnviar">Enviar</button>
+  </form>
+</aside>
+</div><!-- app -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>/* Console de verificacao registral — Arbitralis.
+   O navegador orquestra; cada chamada ao backend e curta e sem estado.
+   O numero_pedido fica em localStorage: e o que impede pedir (e pagar) duas vezes. */
+
+const EMOL = {"MG": 9.79, "DF": 12.9, "PR": 15.84, "PE": 18.75, "SP": 22.95, "RS": 28.61, "PA": 34.38, "BA": 39.58, "GO": 39.99, "RJ": 52.18};          // emolumento por UF
+const GRUPOS = [{"id": "grupo", "nome": "Grupo Cyrela — todas as empresas cadastradas", "cnpjs": ["10.982.461/0001-60", "09.639.203/0001-05", "09.231.462/0001-94"], "a_confirmar": []}, {"id": "10.982.461/0001-60", "nome": "CYRELA EXTREMA EMPREENDIMENTOS IMOBILIÁRIOS LTDA", "cnpjs": ["10.982.461/0001-60"], "a_confirmar": []}, {"id": "09.639.203/0001-05", "nome": "LIVING PANAMÁ EMPREENDIMENTOS IMOBILIÁRIOS LTDA", "cnpjs": ["09.639.203/0001-05"], "a_confirmar": []}, {"id": "09.231.462/0001-94", "nome": "VMSS EMPREENDIMENTO IMOBILIÁRIO SPE S/A", "cnpjs": ["09.231.462/0001-94"], "a_confirmar": []}];      // alvos pre-cadastrados
+const EMPREENDIMENTOS = [{"nome": "Alegro Montenegro", "nomes": ["ALEGRO MONTENEGRO", "CONDOMINIO ALEGRO MONTENEGRO"], "uf": "PA", "municipio": "Belém", "cartorio": "3"}, {"nome": "Jardim de Valência", "nomes": ["JARDIM DE VALENCIA", "JARDIM DE VALENCIA"], "uf": "PA", "municipio": "Belém", "cartorio": "3"}, {"nome": "CEO Salvador Shopping", "nomes": ["CEO SALVADOR SHOPPING", "CEO SALVADOR"], "uf": "BA", "municipio": "Salvador", "cartorio": "3"}];   // empreendimentos conhecidos: local do cartorio
+const PCT = 5, PISO = 2.00, CONCORRENCIA = 4;
+// Minimo de honorario por solicitacao. Existe por duas razoes que apontam na mesma
+// direcao: consulta avulsa tem custo fixo que o lote dilui, e a Cora nao aceita
+// linha de fatura abaixo de R$5,00 — sem isso, toda consulta de 1 ou 2 matriculas
+// seria recusada na emissao.
+const MINIMO_LOTE = 5.00;
+const COLS_SAIDA = ['id_caso','matricula','uf','municipio','cartorio','empreendimento',
+  'unidade','proprietario','documento','natureza','fundamento','onus','situacao','observacao','confianca'];
+// Natureza do dominio: alienacao fiduciaria, nua-propriedade e direito de aquisicao
+// nao sao propriedade plena. Sem esta coluna, um "transmitido a terceiro" esconde
+// que a propriedade e resoluvel — que e uma conversa diferente com o cliente.
+const NATUREZA_PT = {PROPRIEDADE_PLENA:'', NUA_PROPRIEDADE:'nua-propriedade',
+  FIDUCIARIA:'propriedade fiduciária (resolúvel)', DIREITO_AQUISICAO:'direito de aquisição',
+  CONDOMINIO_FRACAO:'fração ideal em condomínio', INDETERMINADO:'natureza indeterminada'};
+
+const $ = s => document.querySelector(s);
+const brl = v => (v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc = s => String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const semAcento = s => (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+
+let LINHAS = [], rodando = false, parar = false, TICK = null, T0 = 0;
+let COBRANCA = null, POLL = null;
+let GERANDO = false;   // cobranca em emissao: a lista nao muda e o chat nao reoferece "Verificar"
+// Resultado ja lido nesta sessao, por empresa comparada + imovel. Editar a lista ou trocar
+// de aba reconstruia tudo como "na fila" e cobrava de novo o que ja tinha sido lido.
+// Para verificar de novo o mesmo imovel, recarregue a pagina.
+const LIDAS = new Map();
+const semZeros = v => String(v||'').replace(/^0+(?=\d)/, '');
+const chaveLida = it => [$('#alvo').value, it.uf, semAcento(it.municipio).trim().toUpperCase(),
+                         semZeros(it.cartorio), semZeros(it.matricula)].join('|');
+
+// Um lote pago que se perde porque o cliente fechou a aba e dinheiro recebido sem
+// serviço entregue. A cobranca e o lote ficam gravados no navegador ate o lote
+// terminar; se a aba morrer no meio, dá para retomar sem pagar de novo.
+const PENDENTE = 'lote_pendente';
+function guardaLote(){
+  try{ localStorage.setItem(PENDENTE, JSON.stringify(
+    {cobranca: COBRANCA, linhas: LINHAS, alvo: $('#alvo').value, quando: Date.now()})); }catch(e){}
+}
+function esqueceLote(){ try{ localStorage.removeItem(PENDENTE); }catch(e){} }
+function cobrancaGuardada(b){
+  const cob = b.cobranca;
+  // Registro de versao anterior nao trazia o lote cobrado: e o que nao estava pendente.
+  if(!cob.lote) cob.lote = (b.linhas||[]).filter(i=>i.estado!=='pendente')
+    .map(i=>({matricula:i.matricula, uf:i.uf, municipio:i.municipio, cartorio:i.cartorio}));
+  return cob;
+}
+function loteGuardado(){
+  try{
+    const b = JSON.parse(localStorage.getItem(PENDENTE) || 'null');
+    if(!b || !b.cobranca) return null;
+    // Nao apaga por idade: lote pago esquecido e dinheiro recebido sem entrega. A tela
+    // confere a cobranca no gateway e diz a idade; quem descarta e o cliente.
+    b.dias = Math.floor((Date.now() - (b.quando || 0)) / 86400e3);
+    return b;
+  }catch(e){ return null; }
+}
+
+const decorrido = ms => {
+  const s = Math.round(ms/1000);
+  return s < 60 ? `${s}s` : `${Math.floor(s/60)}m${String(s%60).padStart(2,'0')}s`;
+};
+
+// Um unico intervalo escreve em qualquer #relogio que exista na tela. Assim o
+// cronometro sobrevive aos redesenhos da tabela e do cartao sem recomecar.
+// A barra e uma estimativa, nao uma medida — nao ha como saber o progresso de uma
+// leitura por dentro. A curva vem do que foi medido em 09/09: 11 paginas em 12s,
+// 88 paginas em 42s. Ela avanca rapido no comeco, desacelera, e PARA em 95%.
+// Nunca chega a 100 sozinha: quem completa e a resposta chegando. Barra que enche
+// e fica parada em 100 mente; esta so diz "ainda estou aqui".
+const CURVA = 18000;   // constante de tempo, em ms
+function ligaRelogio(){
+  if(TICK) return;
+  T0 = Date.now();
+  const bate = () => {
+    const t = Date.now() - T0;
+    document.querySelectorAll('.relogio').forEach(el => el.textContent = decorrido(t));
+    const pct = 95 * (1 - Math.exp(-t / CURVA));
+    document.querySelectorAll('.espera-barra i')
+      .forEach(el => el.style.width = pct.toFixed(1) + '%');
+  };
+  bate(); TICK = setInterval(bate, 500);
+}
+function desligaRelogio(){ clearInterval(TICK); TICK = null; }
+
+/* ---------------------------------------------------------------- parsers */
+
+// Excel em portugues salva "CSV (separado por virgulas)" em Windows-1252, sem BOM. Lido
+// como UTF-8, "Belém" virava "Bel?m" e seguia assim para o pedido ao cartorio.
+function decodifica(buf){
+  // Um byte ruim num arquivo UTF-8 nao pode estragar os acentos certos do resto: so vira
+  // Windows-1252 quando essa leitura tem MENOS sinais de erro que a UTF-8. Sinal de erro
+  // na 1252 e "Ã" ou "Â" seguido de simbolo — e o rastro de UTF-8 lido como 1252.
+  const u = new TextDecoder('utf-8').decode(buf);
+  const errosU = (u.match(/\uFFFD/g) || []).length;
+  if(!errosU) return u;
+  const w = new TextDecoder('windows-1252').decode(buf);
+  const errosW = (w.match(/[\u00C3\u00C2][^A-Za-z0-9\s]/g) || []).length;
+  return errosW >= errosU ? u : w;
+}
+
+function parseCSV(txt){
+  txt = txt.replace(/^\uFEFF/,'');
+  // Um separador por arquivo: o que mais aparece fora de aspas na primeira linha. Virgula
+  // e ponto e virgula ao mesmo tempo partiam "CEO Salvador, Shopping" em duas colunas.
+  const sep = (() => { let a=false, v=0, p=0, t=0;
+    for(const c of txt.split('\n')[0]){
+      if(c==='"') a=!a; else if(!a){ if(c===',') v++; else if(c===';') p++; else if(c==='\t') t++; } }
+    return t && t>=v && t>=p ? '\t' : p>v ? ';' : ','; })();
+  const out=[]; let campo='', linha=[], aspas=false;
+  for(let i=0;i<txt.length;i++){
+    const c=txt[i];
+    if(aspas){ if(c==='"'){ if(txt[i+1]==='"'){campo+='"';i++;} else aspas=false; } else campo+=c; }
+    else if(c==='"') aspas=true;
+    else if(c===sep){ linha.push(campo); campo=''; }
+    else if(c==='\n'){ linha.push(campo); out.push(linha); linha=[]; campo=''; }
+    else if(c!=='\r') campo+=c;
+  }
+  if(campo||linha.length){ linha.push(campo); out.push(linha); }
+  return out.filter(l=>l.some(c=>c.trim()));
+}
+
+const APELIDOS = {matricula:'matricula','matrícula':'matricula',uf:'uf',estado:'uf',
+  municipio:'municipio','município':'municipio',cidade:'municipio',
+  cartorio:'cartorio','cartório':'cartorio',oficio:'cartorio','ofício':'cartorio',ri:'cartorio',
+  id:'id_caso',id_caso:'id_caso',trib:'id_caso',processo:'id_caso',referencia:'id_caso',
+  'referência':'id_caso',empreendimento:'empreendimento',unidade:'unidade','apt/bloco':'unidade',
+  endereco:'endereco','endereço':'endereco'};
+
+function deCSV(txt){
+  const l = parseCSV(txt);
+  if(l.length<2) return [];
+  const cab = l[0].map(h=>APELIDOS[semAcento(h).trim().toLowerCase().replace(/\s+/g,'_')]
+                        || semAcento(h).trim().toLowerCase().replace(/\s+/g,'_'));
+  if(!cab.includes('matricula') && !cab.includes('endereco')) return [];
+  return l.slice(1).map(r=>{ const o={}; cab.forEach((c,i)=>o[c]=(r[i]||'').trim()); return o; });
+}
+
+/* "11695", "11695 PA Belém 3", "11695 / PA / Belem / 3" */
+function deLista(txt){
+  return txt.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
+    const p = l.split(/[\s,;\/|]+/).filter(Boolean);
+    const o = {matricula:(p[0]||'').replace(/\D/g,'')};
+    const resto = p.slice(1);
+    const iUf = resto.findIndex(x=>/^[A-Za-z]{2}$/.test(x));
+    if(iUf>=0){
+      o.uf = resto[iUf].toUpperCase();
+      const dep = resto.slice(iUf+1);
+      const iOf = dep.findIndex(x=>/^\d+º?$/.test(x));
+      o.municipio = (iOf>=0?dep.slice(0,iOf):dep).join(' ');
+      if(iOf>=0) o.cartorio = dep[iOf].replace(/\D/g,'');
+    }
+    return o;
+  }).filter(o=>o.matricula);
+}
+
+/* Blocos do e-mail: tabela do Outlook achatada ou blocos soltos por TRIB. */
+function deEmail(txt){
+  // Tabela copiada do Outlook chega com as celulas da linha separadas por TAB: cada celula
+  // vira uma linha, e o bloco do TRIB fica igual ao dos blocos soltos.
+  const linhas = txt.split('\n').flatMap(l => l.includes('\t') ? l.split('\t') : [l])
+    .map(l=>l.replace(/\s+/g,' ').trim())
+    .filter(l=>l && !l.startsWith('>'));
+  const iRef = [];
+  linhas.forEach((l,i)=>{ if(/^(TRIB|PROC)[\s.\-]?\s*[\d.\/-]+/i.test(l)) iRef.push(i); });
+  if(!iRef.length) return [];
+
+  const casos = [];
+  for(let k=0;k<iRef.length;k++){
+    const bloco = linhas.slice(iRef[k], k+1<iRef.length ? iRef[k+1] : undefined);
+    // corta assinatura no ultimo bloco
+    const fim = bloco.findIndex(l=>/^(permaneço|permaneco|atenciosamente|att\.?|abraço|abraco|--|de:|enviado:)/i.test(l));
+    const b = fim>0 ? bloco.slice(0,fim) : bloco;
+
+    const o = {id_caso:b[0].trim()};
+    for(const l of b.slice(1)){
+      const mMat = l.match(/matr[ií]cula\D{0,12}([\d.]{3,})/i);
+      if(mMat && !o.matricula){ o.matricula = mMat[1].replace(/\D/g,''); continue; }
+      const mLoc = l.match(/([A-Za-zÀ-ÿ'.\s]+?)\s*\/\s*([A-Za-z]{2})\b/);
+      if(mLoc && !o.municipio){
+        o.municipio = mLoc[1].trim().replace(/^.*,\s*/,'');
+        o.uf = mLoc[2].toUpperCase();
+        o.endereco = l; continue;
+      }
+      if(/^(vaga|apto?|apart|sala|conjunto|unidade|loja|box|casa|lote)\b/i.test(l) && !o.unidade){
+        o.unidade = l; continue;
+      }
+      if(!o.empreendimento && l.length>3 && l === l.toUpperCase() && /[A-ZÀ-Ý]/.test(l)){
+        o.empreendimento = l; continue;
+      }
+      if(!o.empreendimento && !o.unidade) o.empreendimento = l;
+    }
+    casos.push(o);
+  }
+  return casos;
+}
+
+/* ------------------------------------------------------- normalizacao */
+
+function normaliza(brutos){
+  const usaCtx = abaAtiva() !== 'unica';
+  const uf0 = usaCtx ? $('#ctxUf').value.trim().toUpperCase() : '',
+        mun0 = usaCtx ? $('#ctxMun').value.trim() : '',
+        of0 = usaCtx ? $('#ctxOf').value.replace(/\D/g,'') : '';
+  const vistas = new Map();
+  return brutos.map((o,i)=>{
+    // Local de cada linha, nesta ordem: o que veio NA linha; o cadastro do empreendimento (se
+    // nao contradiz a linha); so entao o contexto do lote. Com o contexto na frente, um lote que
+    // misturava Belem e Salvador mandava todas as linhas para o mesmo cartorio. Nunca a matricula.
+    let cat = (!o.uf || !o.municipio || !o.cartorio)
+      ? localDoEmpreendimento(`${o.empreendimento||''} ${o.endereco||''}`) : null;
+    if(cat && ((o.uf && String(o.uf).toUpperCase() !== cat.uf) ||
+               (o.municipio && semAcento(o.municipio).trim().toUpperCase() !== semAcento(cat.municipio).toUpperCase()))) cat = null;
+    const uf = (o.uf || (cat && cat.uf) || uf0 || '').toUpperCase();
+    const it = {
+      n:i+1, id_caso:o.id_caso||'', matricula:(o.matricula||'').replace(/\D/g,''),
+      uf, municipio:(o.municipio || (cat && cat.municipio) || mun0 || '').trim(),
+      cartorio:(o.cartorio || (cat && cat.cartorio) || of0 || '').replace(/\D/g,''),
+      localCatalogo: cat ? cat.nome : '',
+      empreendimento:o.empreendimento||'', unidade:o.unidade||'', endereco:o.endereco||'',
+      emolumento: EMOL[uf]||0, estado:'fila',
+      proprietario:'', documento:'', natureza:'', fundamento:'', onus:'', situacao:'', observacao:'',
+    };
+    const faltas=[];
+    if(!it.matricula) faltas.push('sem número de matrícula');
+    if(!it.uf) faltas.push('sem UF');
+    else if(!(it.uf in EMOL)) faltas.push('UF '+it.uf+' fora da tabela de emolumentos');
+    if(!it.municipio) faltas.push('sem município');
+    if(!it.cartorio) faltas.push('sem ofício de registro');
+    if(faltas.length){ it.estado='pendente'; it.observacao=faltas.join('; '); }
+    else {
+      // A mesma matricula duas vezes seria cobrada e pedida duas vezes. A repetida fica
+      // fora do lote, dizendo com qual linha coincide.
+      const semZero = v => v.replace(/^0+(?=\d)/, '');   // "03" e "3" sao o mesmo oficio
+      const k = [it.uf, semAcento(it.municipio).trim().toUpperCase(), semZero(it.cartorio), semZero(it.matricula)].join('|');
+      if(vistas.has(k)){ it.estado='pendente'; it.repetida=true;
+                         it.observacao=`repetida — mesma matrícula da linha ${vistas.get(k)}`; }
+      else vistas.set(k, it.n);
+    }
+    return it;
+  });
+}
+
+function localDoEmpreendimento(texto){
+  const t = semAcento(String(texto||'')).toUpperCase();
+  if(!t.trim()) return null;
+  return EMPREENDIMENTOS.find(e => e.nomes.some(n => n && t.includes(n))) || null;
+}
+
+function abaAtiva(){
+  return document.querySelector('.abas button[aria-selected=true]').dataset.aba;
+}
+
+function lerEntrada(){
+  const aba = abaAtiva();
+  if(aba==='unica'){
+    const m = $('#uMat').value.replace(/\D/g,'');
+    if(!m) return [];
+    return [{matricula:m, uf:$('#uUf').value.trim().toUpperCase(),
+             municipio:$('#uMun').value.trim(), cartorio:$('#uOf').value.replace(/\D/g,'')}];
+  }
+  if(aba==='lista'){
+    // Lista e trecho de e-mail entram pelo mesmo campo: o formato e reconhecido sozinho.
+    const t = $('#txtLista').value;
+    return formaDoTexto(t.trim()) === 'email' ? deEmail(t) : deLista(t);
+  }
+  return CSV_BRUTO;
+}
+let CSV_BRUTO = [];
+let LE_ARQUIVO = null;   // o leitor de planilha da aba, reaproveitado pelo assistente
+
+/* ----------------------------------------------------------- render */
+
+// A pergunta do cliente nao e "de quem e o imovel", e "o comprador ja tirou do meu
+// nome?". Por isso SIM (ainda em nome da vendedora) e VERMELHO: e a pendencia que
+// gera exposicao. NAO e verde: a transferencia foi registrada e o assunto acabou.
+const SIT = {
+  SIM:            ['r','Ainda no nome de vocês'],
+  NAO:            ['v','Já transferido'],
+  PARCIAL:        ['a','Transferido em parte'],
+  INDETERMINADO:  ['c','Indeterminado'],
+  '':             ['c','Proprietário identificado'],   // sem empresa escolhida para comparar
+};
+
+function tagSituacao(it){
+  if(it.estado==='pendente') return it.repetida ? '<span class="tag c"><i class="ponto"></i>Repetida</span>'
+                                                : '<span class="tag a"><i class="ponto"></i>Falta dado</span>';
+  if(it.estado==='erro')     return '<span class="tag r"><i class="ponto"></i>Falhou</span>';
+  if(it.estado==='fila')     return '<span class="tag c"><i class="ponto"></i>Na fila</span>';
+  if(it.estado==='pedindo')  return '<span class="girando"></span><span class="mini">pedindo ao cartório</span>';
+  if(it.estado==='lendo')    return '<span class="girando"></span><span class="mini">lendo a matrícula</span>';
+  const s = SIT[it.situacao] || ['c', it.situacao||'—'];
+  return `<span class="tag ${s[0]}"><i class="ponto"></i>${esc(s[1])}</span>`;
+}
+
+// Busca e linhas abertas vivem fora de LINHAS: sao estado de tela, nao do lote.
+// ABERTAS guarda uma chave ESTAVEL da linha. Guardar a posicao fazia o detalhe
+// aberto pular para outra matricula quando a lista era editada e renumerada.
+// Calculada na hora (e nao em normaliza) para servir tambem a lotes retomados
+// que foram gravados antes desta versao.
+let BUSCA = '';
+const ABERTAS = new Set();
+const chaveDe = it => [it.id_caso, it.uf, it.municipio, it.cartorio, it.matricula].join('|');
+
+// Particiona pela acao que cada linha pede ao juridico — e a pergunta do cliente:
+// o que ainda expoe a Cyrela? So particiona; quem decide a tela e pinta().
+function agrupa(linhas){
+  const g = {andamento:[], acao:[], consultado:[], revisar:[], resolvido:[]};
+  for(const it of linhas){
+    if(it.estado==='fila' || it.estado==='pedindo' || it.estado==='lendo') g.andamento.push(it);
+    else if(it.estado==='ok' && it.situacao==='SIM') g.acao.push(it);
+    else if(it.estado==='ok' && it.situacao==='NAO') g.resolvido.push(it);
+    else if(it.estado==='ok' && !it.situacao) g.consultado.push(it);   // lida, sem comparacao
+    else g.revisar.push(it);   // falta dado, falhou, parcial, indeterminado
+  }
+  return g;
+}
+
+function casaBusca(it){
+  if(!BUSCA) return true;
+  return semAcento([it.id_caso, it.matricula, it.empreendimento, it.unidade, it.endereco,
+                    it.municipio, it.proprietario, it.documento].join(' ')).toLowerCase().includes(BUSCA);
+}
+
+function linhaHTML(it){
+  const local = [[it.municipio, it.uf].filter(Boolean).join('/'),
+                 it.cartorio ? `${it.cartorio}º ofício` : ''].filter(Boolean).join(' · ');
+  const imovel = [it.empreendimento, it.unidade].filter(Boolean).join(' · ') || local;
+  const falhaOuFalta = it.estado==='pendente' || it.estado==='erro';
+  // O motivo de "falta dado"/"falhou" fica a vista: e o que o Allan precisa corrigir.
+  // O resto do detalhe (ato, onus, observacao) fica atras de um clique.
+  const detalhe = [it.fundamento, it.onus && 'Ônus: '+it.onus,
+                   falhaOuFalta ? '' : it.observacao,
+                   it.confianca && !/^\s*ALTA/i.test(it.confianca) ? 'Confiança da leitura: '+it.confianca : '']
+                  .filter(Boolean);
+  const cls = [it.estado==='erro' ? 'linha-erro' : '', it.estado==='pendente' ? 'linha-pend' : '',
+               detalhe.length && ABERTAS.has(chaveDe(it)) ? 'aberta' : ''].filter(Boolean).join(' ');
+  return `<tr${cls ? ` class="${cls}"` : ''}${detalhe.length ? ` data-chave="${esc(chaveDe(it))}"` : ''}>
+    <td>${esc(it.id_caso||'—')}</td>
+    <td class="num">${esc(it.matricula||'—')}</td>
+    <td>${esc(imovel||'—')}${imovel!==local ? `<br><small class="mini">${esc(local)}${it.localCatalogo ? ' · cartório pelo cadastro' : ''}</small>` : ''}</td>
+    <td class="dono">${esc(it.proprietario||'—')}
+      ${it.documento ? `<small>${esc(it.documento)}</small>` : ''}
+      ${it.natureza ? `<small style="color:var(--amarelo)">${esc(it.natureza)}</small>` : ''}
+      ${falhaOuFalta && it.observacao ? `<span class="motivo">${esc(it.observacao)}</span>` : ''}
+      ${detalhe.length ? `<div class="detalhe">${detalhe.map(d => `<small>${esc(d)}</small>`).join('')}</div>` : ''}</td>
+    <td class="sit">${tagSituacao(it)}</td></tr>`;
+}
+
+const GRUPOS_TELA = [
+  ['andamento', 'Andamento', ''],
+  ['acao',      'Acao',      'Nenhuma pendência.'],
+  ['consultado','Consultado',''],
+  ['revisar',   'Revisar',   'Nada para revisar.'],
+  ['resolvido', 'Resolvido', 'Ainda nada resolvido.'],
+];
+
+function pinta(){
+  // Lote retomado abre na aba padrao ("Um imovel"): cartao so quando ha uma linha.
+  if(abaAtiva()==='unica' && LINHAS.length <= 1) pintaCartao(); else $('#cartao').hidden = true;
+  const visiveis = LINHAS.filter(casaBusca);
+  const g = agrupa(visiveis), todas = agrupa(LINHAS);
+  for(const [k, id, vazio] of GRUPOS_TELA){
+    const lista = g[k];
+    $('#corpo'+id).innerHTML = lista.length ? lista.map(linhaHTML).join('')
+      : `<tr class="vazio"><td colspan="5">${vazio}</td></tr>`;
+    $('#cnt'+id).textContent = lista.length;
+    const bloco = $('#grp'+id);
+    // Sem busca: "Ainda não verificado" e "Proprietário identificado" so aparecem
+    // quando tem linha. Sem empresa para comparar, "Ação necessária" e "Resolvidos"
+    // vazios tambem somem — ali "Nenhuma pendência" afirmaria algo que nao foi medido.
+    // Com busca: qualquer grupo sem resultado some.
+    const semComparacao = !$('#alvo').value;
+    const someVazio = k==='andamento' || k==='consultado'
+                      || (semComparacao && (k==='acao' || k==='resolvido'));
+    if(BUSCA) bloco.hidden = !lista.length;
+    else bloco.hidden = someVazio ? !todas[k].length : false;
+    if(BUSCA && lista.length) bloco.open = true;
+  }
+  $('#buscaVazia').hidden = !BUSCA || visiveis.length > 0;
+  pintaEtapas();
+}
+
+function orca(){
+  const prontas = loteProntas();
+  const o = orcamentoAtual();
+  const pend = LINHAS.filter(i=>i.estado==='pendente').length;
+  $('#custo').innerHTML = prontas.length
+    ? `<b>${prontas.length}</b> ${prontas.length===1?'matrícula':'matrículas'} · `+
+      `emolumentos R$ ${brl(o.emolumentos)} + honorário R$ ${brl(o.honorario)}`+
+      (o.minimoAplicado?' <span class="dim">(mínimo)</span>':'')+
+      ` = <b>R$ ${brl(o.total)}</b>`+
+      (pend?` · <span style="color:var(--amarelo)">${pend} fora do lote (falta dado ou repetida)</span>`:'')
+    : (LINHAS.length && !LINHAS.some(i=>i.estado==='ok')
+       ? `<span style="color:var(--amarelo)">Nenhuma linha tem dados suficientes.</span>` : '');
+  $('#btnVerificar').disabled = !prontas.length || rodando;
+  $('#btnVerificar').textContent =
+    (abaAtiva()==='unica' || prontas.length<=1) ? 'Verificar'
+    : `Verificar ${prontas.length} matrículas`;
+}
+
+// Um imovel so nao merece uma tabela de uma linha: merece uma resposta grande,
+// legivel de longe, que e como a pergunta chega a quem consulta.
+function pintaCartao(){
+  const it = LINHAS[0], cx = $('#cartao');
+  if(!it){ cx.hidden = true; return; }
+  cx.hidden = false;
+
+  let cor, titulo;
+  if(it.estado==='pendente'){ cor='a'; titulo='Falta um dado para consultar'; }
+  else if(it.estado==='erro'){ cor='r'; titulo='A consulta falhou'; }
+  else if(it.estado==='fila'){ cor='c'; titulo='Pronto para verificar'; }
+  else if(it.estado==='pedindo'||it.estado==='lendo'){
+    cor='c'; titulo = it.estado==='pedindo' ? 'Pedindo a matrícula ao cartório'
+                                            : 'Lendo a matrícula'; }
+  else { const s2 = SIT[it.situacao] || ['c','Indeterminado']; cor=s2[0]; titulo=s2[1]; }
+
+  const local = [[it.municipio,it.uf].filter(Boolean).join('/'),
+                 it.cartorio?`${it.cartorio}º ofício`:''].filter(Boolean).join(' · ');
+  const blocos = [];
+  if(it.proprietario) blocos.push(`<div class="bloco"><b>Em nome de quem está hoje</b>
+    <p>${esc(it.proprietario)}</p>
+    ${it.documento?`<p class="doc">${esc(it.documento)}</p>`:''}
+    ${it.natureza?`<p class="doc" style="color:var(--amarelo)">${esc(it.natureza)}</p>`:''}</div>`);
+  if(it.fundamento) blocos.push(`<div class="bloco"><b>Ato que fundamenta</b>
+    <p>${esc(it.fundamento)}</p></div>`);
+  if(it.onus) blocos.push(`<div class="bloco"><b>Ônus ativos</b><p>${esc(it.onus)}</p></div>`);
+  if(!blocos.length) blocos.push(`<div class="bloco"><b>Imóvel</b>
+    <p>Matrícula ${esc(it.matricula||'—')}${local?' · '+esc(local):''}</p></div>`);
+
+  const emCurso = it.estado==='pedindo' || it.estado==='lendo';
+  cx.innerHTML = `<div class="veredito ${cor}">
+    <div class="faixa"><i></i>${esc(titulo)}${
+      emCurso ? ` <span class="relogio">0s</span>` : ''}</div>
+    ${emCurso ? `<div class="espera">
+      <div class="espera-barra"><i></i></div>
+      <p>A matrícula vem digitalizada, página por página, e cada uma precisa ser lida.
+      Costuma levar cerca de um minuto. Pode deixar esta aba aberta.</p></div>` : ''}
+    <div class="corpo">${blocos.join('')}</div>
+    <div class="rodape">Matrícula ${esc(it.matricula||'—')}${local?' · '+esc(local):''}${
+      it.observacao?' — '+esc(it.observacao):''}</div></div>`;
+}
+
+// Com cobranca gerada ou consulta em curso, a lista nao muda: o que foi cobrado e o que
+// esta sendo consultado precisam ser a mesma coisa. Para montar outra, Limpar — que
+// cancela o PIX ainda nao pago.
+function atualizaTrava(){
+  const trava = !!COBRANCA || rodando || GERANDO;
+  document.querySelectorAll('.abas button, #uMat, #uUf, #uMun, #uOf, #txtLista, ' +
+                            '#ctxUf, #ctxMun, #ctxOf, #arq')
+    .forEach(el => el.disabled = trava);
+  // Trocar a empresa comparada com linhas ja lidas as devolvia a fila e cobrava de novo o
+  // emolumento de pedido ja pago. Para comparar com outra empresa: Limpar e verificar de novo.
+  const temLidas = LINHAS.some(i => i.estado === 'ok');
+  $('#alvo').disabled = $('#trocarAlvo').disabled = trava || temLidas;
+  $('#avisoAlvo').hidden = trava || !temLidas;
+  $('#zona').classList.toggle('travada', trava);
+  $('#btnLimpar').disabled = rodando;
+  $('#avisoTrava').hidden = !trava;
+  pintaEtapas();
+}
+
+// Etapas 1-2-3: so leitura do estado. Quem decide o que pode ser editado continua sendo
+// atualizaTrava(); um passo clicavel seria uma segunda fonte de verdade.
+function pintaEtapas(){
+  const el = $('#etapas'); if(!el) return;
+  const comResultado = LINHAS.some(i => ['ok','erro','pedindo','lendo'].includes(i.estado));
+  const novas = LINHAS.some(i => i.estado === 'fila');
+  const pagando = !$('#pagamento').hidden || (!!COBRANCA && !rodando && !comResultado);
+  // Lista nova montada depois de um lote concluido volta ao passo 1, mesmo com resultados na tela.
+  const atual = rodando ? 3 : pagando ? 2 : (!LINHAS.length || (novas && !COBRANCA)) ? 1 : comResultado ? 3 : 1;
+  const concluido = atual === 3 && !rodando && !novas;
+  el.querySelectorAll('li').forEach(li => {
+    const n = Number(li.dataset.etapa), feito = n < atual || (n === 3 && concluido);
+    li.classList.toggle('feito', feito);
+    li.classList.toggle('atual', n === atual && !feito);
+  });
+}
+
+function recarrega(){
+  if(COBRANCA || rodando || GERANDO) return;
+  $('#pagamento').hidden = true;   // a lista mudou: o orcamento mostrado ficou velho
+  LINHAS = normaliza(lerEntrada());
+  // Texto colado sem nenhum bloco reconhecivel: diz o formato em vez de ficar mudo.
+  $('#avisoTexto').hidden = !(abaAtiva()==='lista' && $('#txtLista').value.trim() && !LINHAS.length);
+  LINHAS.forEach(it => {
+    const lida = it.estado==='fila' && LIDAS.get(chaveLida(it));
+    if(lida) Object.assign(it, lida, {estado:'ok'});
+  });
+  const unica = abaAtiva()==='unica';
+  $('#contexto').hidden = unica;
+  $('#resultado').hidden = unica || !LINHAS.length;
+  $('#cartao').hidden = !unica || !LINHAS.length;
+  $('#legenda').hidden = !LINHAS.length;
+  pinta(); orca(); atualizaTrava();
+  agendaLote();
+}
+
+/* --------------------------------------------------------- backend */
+
+function memoria(it){ return `pedido:${it.uf}|${it.municipio}|${it.cartorio}|${it.matricula}`; }
+// Guarda o protocolo e o ticket que o liga a cobranca paga. Registro antigo (so o
+// protocolo) continua legivel: sem ticket, a leitura pede o ticket de novo ao servidor.
+function pedidoGuardado(it){
+  try{
+    const v = localStorage.getItem(memoria(it));
+    if(!v) return null;
+    if(v[0] !== '{') return {np: v, t: ''};
+    const o = JSON.parse(v); return o && o.np ? o : null;
+  }catch(e){ return null; }
+}
+function guardaPedido(it, np, t, falhas){
+  try{ localStorage.setItem(memoria(it), JSON.stringify({np, t: t||'', ...(falhas ? {falhas} : {})})); }catch(e){}
+}
+function soltaPedido(it){ try{ localStorage.removeItem(memoria(it)); }catch(e){} }
+
+const ACESSO = (() => {
+  const daUrl = new URLSearchParams(location.search).get('k');
+  if(daUrl){ try{ localStorage.setItem('acesso', daUrl); }catch(e){} 
+             history.replaceState(null,'',location.pathname); return daUrl; }
+  try{ return localStorage.getItem('acesso') || ''; }catch(e){ return ''; }
+})();
+
+async function chamar(rota, corpo){
+  const r = await fetch('/api/'+rota, {
+    method:'POST',
+    headers:{'Content-Type':'application/json', ...(ACESSO?{'x-acesso':ACESSO}:{})},
+    body: JSON.stringify(corpo)});
+  const j = await r.json().catch(()=>({erro:'resposta inválida do servidor'}));
+  if(!r.ok){
+    const e = new Error(j.erro || ('falha '+r.status));
+    e.status = r.status; e.expirado = !!j.expirado; e.semTicket = !!j.semTicket;
+    e.novaCobranca = !!j.novaCobranca; e.transitorio = !!j.transitorio; e.codigo = j.codigo || null;
+    throw e;
+  }
+  return j;
+}
+
+let LOTE_PAGO = null;
+
+async function verificaUma(it, alvo){
+  // 1. Pedido — passo que gasta. So corre uma vez por matricula, nunca em retentativa cega.
+  const pedirAgora = async () => {
+    it.estado='pedindo'; pinta();
+    const r = await chamar('pedido', {matricula:it.matricula, uf:it.uf,
+      municipio:it.municipio, cartorio:it.cartorio, forcar:!!it.refazerPedido,
+      ...(COBRANCA ? {cobranca_id: COBRANCA.id, lote: LOTE_PAGO} : {})});
+    it.refazerPedido = false;
+    guardaPedido(it, r.numero_pedido, r.ticket);
+    return {np: r.numero_pedido, t: r.ticket || ''};
+  };
+  let ped = it.refazerPedido ? null : pedidoGuardado(it);
+  if(!ped) ped = await pedirAgora();
+  // 2. Leitura — nao gasta emolumento (so o download, R$ 0,20).
+  it.estado='lendo'; pinta();
+  const lerCom = p => chamar('ler', {numero_pedido:p.np, alvo,
+    ...(COBRANCA ? {cobranca_id: COBRANCA.id, ticket: p.t} : {})});
+  let d;
+  try{ d = await lerCom(ped); }
+  catch(e){
+    // Protocolo guardado sem ticket (versao anterior da tela): o servidor reaproveita o
+    // mesmo pedido, sem emolumento, e devolve o ticket. Uma vez so.
+    if(!e.semTicket) throw e;
+    soltaPedido(it);
+    d = await lerCom(await pedirAgora());
+  }
+  it.proprietario = d.proprietario||'';
+  it.documento    = d.documento||'';
+  it.natureza     = NATUREZA_PT[d.natureza] ?? (d.natureza||'').toLowerCase();
+  it.fundamento   = d.fundamento||'';
+  it.onus         = (d.onus||[]).join('; ');
+  // Com empresa para comparar, resposta vazia e duvida: INDETERMINADO. Sem empresa,
+  // nao existe pergunta de sim/nao — so o proprietario lido. Sao casos diferentes.
+  it.situacao     = alvo ? (d.situacao||'INDETERMINADO') : '';
+  it.observacao   = d.observacao||'';
+  it.confianca    = d.confianca||'';
+  it.estado       = 'ok';
+  LIDAS.set(chaveLida(it), {proprietario:it.proprietario, documento:it.documento, natureza:it.natureza,
+    fundamento:it.fundamento, onus:it.onus, situacao:it.situacao, observacao:it.observacao, confianca:it.confianca});
+}
+
+// So o que ainda falta consultar entra em orcamento e cobranca: linha ja lida nao se paga de novo.
+function loteProntas(){ return LINHAS.filter(i => (i.estado === 'fila' || i.estado === 'erro') && !i.aguardaArbitralis); }
+
+function orcamentoAtual(){
+  const p = loteProntas();
+  const emol = p.reduce((s,i)=>s+i.emolumento,0);
+  const bruto = p.reduce((s,i)=>s+Math.max(i.emolumento*PCT/100,PISO),0);
+  const hon = p.length ? Math.max(bruto, MINIMO_LOTE) : 0;
+  return {emolumentos:+emol.toFixed(2), honorario:+hon.toFixed(2),
+          total:+(emol+hon).toFixed(2), minimoAplicado: p.length>0 && hon>bruto+0.001};
+}
+function loteEnxuto(){
+  return loteProntas().map(i=>({matricula:i.matricula, uf:i.uf,
+                                municipio:i.municipio, cartorio:i.cartorio}));
+}
+
+// Etapa de pagamento. Entra entre conferir e consultar: nada e pedido ao cartorio
+// antes de o dinheiro entrar.
+function mostraPagamento(){
+  const o = orcamentoAtual(), n = loteProntas().length;
+  $('#pagConta').innerHTML =
+    `<table>
+      <tr><td>Emolumentos registrais <span class="dim">(repasse a custo)</span></td>
+          <td>R$ ${brl(o.emolumentos)}</td></tr>
+      <tr><td>Honorário Arbitralis ${o.minimoAplicado
+            ? '<span class="dim">(mínimo por solicitação)</span>'
+            : `(${PCT}%)`}</td><td>R$ ${brl(o.honorario)}</td></tr>
+      <tr class="total"><td>Total · ${n} ${n===1?'matrícula':'matrículas'}</td>
+          <td>R$ ${brl(o.total)}</td></tr>
+    </table>
+    <p class="obs">Os emolumentos são repassados integralmente aos cartórios, sem
+    acréscimo. Linhas que não gerarem consulta são devolvidas ou creditadas no
+    acerto final.</p>`;
+  $('#pagamento').hidden = false;
+  // Tabela vazia embaixo da fatura e ruido: some ate haver o que mostrar.
+  $('#resultado').hidden = true; $('#legenda').hidden = true;
+  $('#pagamento').scrollIntoView({behavior:'smooth', block:'start'});
+  clearTimeout(TIMER_LOTE); pintaEtapas(); avisaPagamento();
+}
+
+async function geraCobranca(){
+  const nome = $('#pagNome').value.trim(), doc = $('#pagDoc').value.trim();
+  if(!nome || !doc){ alert('Preencha a razão social e o CNPJ do pagador.'); return; }
+  const btn = $('#btnCobrar');
+  btn.disabled = true; btn.textContent = 'Gerando...';
+  GERANDO = true; clearTimeout(TIMER_LOTE); atualizaTrava();
+  try{
+    const r = await chamar('cobranca', {itens: loteEnxuto(), orc: orcamentoAtual(),
+                                        cliente: {nome, doc}});
+    if(r.dispensada){ COBRANCA = null; $('#pagamento').hidden = true; return executar(); }
+    // O lote cobrado fica congelado junto da cobranca: e ele que o servidor confere, nao
+    // o que estiver digitado na tela na hora de consultar.
+    COBRANCA = Object.assign(r, {lote: loteEnxuto()});
+    LINHAS.forEach(i => { i.precisaNovaCobranca = false; });
+    guardaLote(); atualizaTrava();
+    // A Cora entrega so o copia-e-cola. O QR e desenhado aqui a partir dele — e se a
+    // biblioteca nao carregar, o copia-e-cola sozinho ja resolve o pagamento.
+    mostraPix();
+  }catch(e){
+    alert('Não consegui gerar a cobrança: ' + e.message);
+    btn.disabled = false; btn.textContent = 'Gerar PIX';
+  }finally{ GERANDO = false; atualizaTrava(); }
+}
+
+function mostraPix(){
+  const r = COBRANCA;
+  // A Cora entrega so o copia-e-cola. O QR e desenhado aqui a partir dele — e se a
+  // biblioteca nao carregar, o copia-e-cola sozinho ja resolve o pagamento.
+  $('#pagQr').innerHTML = '';
+  try{ if(window.QRCode && r.pix) new QRCode($('#pagQr'), {text:r.pix, width:156, height:156,
+                                                          correctLevel: QRCode.CorrectLevel.M}); }
+  catch(e){ $('#pagQr').innerHTML = ''; }
+  $('#pagPayload').value = r.pix || '';
+  $('#pagFatura').href = r.fatura || '#';
+  $('#pagLado').hidden = true;
+  $('#pagPix').hidden = false;
+  $('#pagTitulo').textContent = `Pague R$ ${brl(r.valor)} para liberar a consulta`;
+  esperaPagamento();
+  avisaPix();
+}
+
+// Largar uma cobranca nao paga CANCELA o PIX no gateway: fatura esquecida aberta e o
+// caminho para pagar duas vezes. Cobranca paga nao se larga sem o cliente confirmar.
+async function largaCobranca(cob){
+  if(!cob || !cob.id) return true;
+  try{
+    const st = await chamar('cobranca', {consultar: cob.id});
+    if(st.pago) return confirm('Esta cobrança já foi paga e ainda há matrículas sem consulta. ' +
+      'Se descartar, elas só poderão ser consultadas com uma cobrança nova. Descartar mesmo assim?');
+    if(String(st.status).toUpperCase() === 'CANCELLED') return true;
+    if(!cob.lote) return confirm('Não consigo cancelar este PIX por aqui. Se descartar, não pague ' +
+      'o código antigo. Descartar mesmo assim?');
+    await chamar('cobranca', {cancelar: cob.id, lote: cob.lote});
+    return true;
+  }catch(e){
+    return confirm(`Não consegui cancelar o PIX agora (${e.message}). Se descartar, não pague ` +
+      'o código antigo. Descartar mesmo assim?');
+  }
+}
+
+function esperaPagamento(){
+  clearInterval(POLL);
+  POLL = setInterval(async () => {
+    try{
+      const r = await chamar('cobranca', {consultar: COBRANCA.id});
+      if(r.pago){
+        clearInterval(POLL); POLL = null;
+        $('#pagEstado').innerHTML = '<b style="color:var(--verde)">Pagamento confirmado.</b> Iniciando a consulta…';
+        avisaPago();
+        setTimeout(() => { $('#pagamento').hidden = true; executar(); }, 900);
+      }
+    }catch(e){ /* rede instavel nao cancela a espera */ }
+  }, 5000);
+}
+
+async function rodar(){
+  if(rodando) return;
+  // Sem cobranca gerada, o botao Verificar abre a etapa de pagamento em vez de consultar.
+  if(!COBRANCA){ mostraPagamento(); return; }
+  return executar();
+}
+
+async function executar(){
+  $('#resultado').hidden = false; $('#legenda').hidden = false;
+  const opt = $('#alvo').selectedOptions[0];
+  const alvo = opt && opt.value ? {nome:opt.dataset.nome, cnpjs:JSON.parse(opt.dataset.cnpjs||'[]'),
+                                   a_confirmar:JSON.parse(opt.dataset.aconfirmar||'[]')} : null;
+  // Linha que ja usou o pedido desta cobranca nao volta a ela: so entra na proxima.
+  const fila = LINHAS.filter(i=>(i.estado==='fila'||i.estado==='erro') && !(COBRANCA && i.precisaNovaCobranca)
+                                 && !i.aguardaArbitralis);
+  if(!fila.length) return;
+
+  LOTE_PAGO = COBRANCA && COBRANCA.lote ? COBRANCA.lote : loteEnxuto();
+  rodando = true; parar = false; atualizaTrava();
+  $('#tempoTotal').textContent = '';
+  $('#progresso').classList.add('on');
+  $('#caixaErro').innerHTML='';
+  orca();
+  let feitas = 0;
+  const passo = () => {
+    feitas++;
+    $('#barraFill').style.width = (feitas/fila.length*100)+'%';
+    const media = (Date.now()-T0)/feitas;
+    const faltam = Math.max(0, fila.length-feitas);
+    $('#progressoTxt').innerHTML = `${feitas} de ${fila.length} · `+
+      `<span class="relogio">0s</span>` +
+      (faltam ? ` · faltam ~${decorrido(media*faltam/CONCORRENCIA)}` : '');
+    avisaProgresso(feitas, fila.length, faltam ? decorrido(media*faltam/CONCORRENCIA) : '');
+  };
+  $('#progressoTxt').innerHTML = `0 de ${fila.length} · <span class="relogio">0s</span>`;
+  $('#barraFill').style.width='0%';
+  ligaRelogio();
+  avisaInicio(fila.length);
+  let i = 0;
+  const worker = async () => {
+    while(i < fila.length && !parar){
+      const it = fila[i++];
+      try { await verificaUma(it, alvo); guardaLote(); }
+      catch(e){
+        it.estado='erro'; it.observacao=e.message;
+        // Pedido fora da janela: solta o protocolo guardado para que uma proxima
+        // tentativa possa pedir de novo. O servidor reaproveita se ainda valer.
+        if(e.expirado){
+          soltaPedido(it);
+          it.refazerPedido = true;   // senao a proxima tentativa reaproveita o mesmo protocolo morto
+          it.observacao += ' — o pedido saiu da janela de recuperação; verificar de novo fará um pedido novo ao cartório.'; }
+        // Pedido vencido que ja usou o pedido desta cobranca: pedir de novo e custo novo.
+        // A linha sai desta cobranca e vai sozinha para a proxima — sem repetir o 409 e sem
+        // cobrar de novo as linhas que ja deram certo.
+        if(e.novaCobranca){ it.precisaNovaCobranca = true; it.refazerPedido = false; }
+        // 609 e instabilidade do cartorio e a tentativa nao e cobrada (suporte do provedor,
+        // 11/09): a linha continua podendo tentar de novo e nao conta para a trava abaixo.
+        if(e.transitorio && Number(e.codigo) === 609){
+          it.observacao += ' Tentar de novo não tem custo.';
+        }
+        // Outro codigo transitorio recusado duas vezes no MESMO pedido deixa de parecer
+        // instabilidade, e nao se sabe se a tentativa e cobrada: a tela para de oferecer
+        // "tente de novo", a linha sai do lote e vai para a Arbitralis.
+        else if(e.transitorio){
+          const ped = pedidoGuardado(it);
+          if(ped){
+            ped.falhas = (ped.falhas || 0) + 1;
+            guardaPedido(it, ped.np, ped.t, ped.falhas);
+            if(ped.falhas >= 2){
+              it.aguardaArbitralis = true;
+              it.observacao = `O provedor recusou o download deste pedido ${ped.falhas} vezes` +
+                `${e.codigo ? ` (código ${e.codigo})` : ''}. Não tente de novo: fale com a Arbitralis ` +
+                `informando a cobrança ${COBRANCA ? COBRANCA.id : '—'} e a matrícula ${it.matricula}.`;
+            }
+          }
+        }
+      }
+      passo(); pinta();
+    }
+  };
+  await Promise.all(Array.from({length:Math.min(CONCORRENCIA,fila.length)}, worker));
+
+  const restam = LINHAS.some(i => (i.estado==='fila' || i.estado==='erro') && !i.precisaNovaCobranca && !i.aguardaArbitralis);
+  // Lote concluido libera a cobranca: a proxima lista e outro lote, com outra cobranca.
+  // Sem isso, verificar matriculas novas reusava a cobranca antiga e dava 409 para sempre.
+  if(!restam){ esqueceLote(); COBRANCA = null; LOTE_PAGO = null; } else guardaLote();
+  rodando = false; atualizaTrava();
+  const gastou = Date.now()-T0;
+  desligaRelogio();
+  $('#progresso').classList.remove('on');
+  orca(); pinta();
+  // "1 matrícula verificada" sobre uma linha que falhou era mentira: conta so as que deram certo.
+  const certas = fila.filter(i=>i.estado==='ok').length;
+  $('#tempoTotal').textContent = fila.length
+    ? `${certas} de ${fila.length} ${fila.length===1?'matrícula verificada':'matrículas verificadas'} em ${decorrido(gastou)}`
+    : '';
+  const falhas = LINHAS.filter(i=>i.estado==='erro');
+  const vencidas = falhas.filter(i=>i.refazerPedido).length;
+  const novas = falhas.filter(i=>i.precisaNovaCobranca).length;
+  const paradas = falhas.filter(i=>i.aguardaArbitralis).length;
+  const outras = falhas.length - vencidas - novas - paradas;
+  if(falhas.length) $('#caixaErro').innerHTML =
+    `<div class="erro-caixa"><b>${falhas.length} ${falhas.length===1?'linha falhou':'linhas falharam'}.</b>
+     ${outras ? 'O pedido já feito ao cartório fica guardado neste navegador: tentar de novo não faz pedido novo. ' : ''}
+     ${vencidas ? `${vencidas} ${vencidas===1?'pedido saiu':'pedidos saíram'} da janela de recuperação e ${vencidas===1?'precisa':'precisam'} de pedido novo. ` : ''}
+     ${novas ? `${novas} ${novas===1?'linha precisa':'linhas precisam'} de uma cobrança nova só para ${novas===1?'ela':'elas'}: o pedido venceu antes da leitura. As que deram certo não entram nela. ` : ''}
+     ${paradas ? `${paradas} ${paradas===1?'linha teve':'linhas tiveram'} o download recusado duas vezes pelo provedor: não tente de novo, fale com a Arbitralis. ` : ''}
+     ${outras || vencidas || novas ? `Clique em Verificar outra vez para ${novas && !outras && !vencidas ? 'gerar essa cobrança' : 'retomar só as que faltam'}.` : ''}</div>`;
+  avisaFim(fila, gastou);
+  // A bolha do lote foi montada antes da consulta: os numeros dela ja nao valem.
+  desativa(BOLHAS.lote); delete BOLHAS.lote;
+  if(!COBRANCA && loteProntas().length) avisaLote();
+}
+
+/* -------------------------------------------------------- downloads */
+
+function tabelaSaida(linhas = LINHAS){
+  return linhas.map(it=>({
+    id_caso:it.id_caso, matricula:it.matricula, uf:it.uf, municipio:it.municipio,
+    cartorio:it.cartorio, empreendimento:it.empreendimento, unidade:it.unidade,
+    proprietario:it.proprietario, documento:it.documento, natureza:it.natureza,
+    fundamento:it.fundamento,
+    onus:it.onus,
+    situacao: it.estado==='pendente' ? (it.repetida ? 'REPETIDA' : 'FALTA DADO')
+            : it.estado==='erro' ? 'FALHOU'
+            : it.estado!=='ok' ? 'NÃO VERIFICADO'
+            : (SIT[it.situacao]||[,it.situacao||''])[1],
+    _cor: it.estado==='pendente'||it.estado==='erro' ? 'a'
+        : it.estado!=='ok' ? 'c'
+        : (SIT[it.situacao]||['c'])[0],
+    observacao:it.observacao, confianca:it.confianca||'',
+  }));
+}
+
+function baixa(blob, nome){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=nome; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+}
+
+function baixaCSV(escolhidas = LINHAS, nome = 'verificacao_registral.csv'){
+  const linhas=[COLS_SAIDA.join(',')].concat(tabelaSaida(escolhidas).map(o=>
+    COLS_SAIDA.map(c=>{ let v=String(o[c]??'');
+      // Celula que comeca com = + - @ vira formula no Excel: um id colado de e-mail podia
+      // mandar o proprietario e o CPF da linha para fora. O apostrofo desliga isso.
+      if(/^[=+\-@\t\r]/.test(v)) v = "'" + v;
+      return /[",;\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }).join(',')));
+  baixa(new Blob(['\uFEFF'+linhas.join('\r\n')],{type:'text/csv;charset=utf-8'}), nome);
+}
+
+/* XLSX escrito a mao: zip sem compressao + styles com preenchimento verde/vermelho.
+   Sem biblioteca externa — o indicador de cor e o que o cliente pediu, entao ele
+   precisa sobreviver ao download, nao so a tela. */
+function crc32(buf){
+  let t = crc32.t;
+  if(!t){ t = crc32.t = new Int32Array(256);
+    for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c = c&1 ? 0xEDB88320^(c>>>1) : c>>>1; t[n]=c; } }
+  let c = -1;
+  for(let i=0;i<buf.length;i++) c = (c>>>8) ^ t[(c^buf[i]) & 0xFF];
+  return (c ^ -1) >>> 0;
+}
+
+function zip(arquivos){
+  const enc = new TextEncoder(), partes=[], central=[];
+  let off = 0;
+  const u16=n=>[n&255,(n>>8)&255], u32=n=>[n&255,(n>>8)&255,(n>>16)&255,(n>>24)&255];
+  for(const [nome,texto] of arquivos){
+    const n = enc.encode(nome), d = enc.encode(texto), crc = crc32(d);
+    const loc = new Uint8Array([...u32(0x04034b50),...u16(20),...u16(0x0800),...u16(0),
+      ...u16(0),...u16(0),...u32(crc),...u32(d.length),...u32(d.length),
+      ...u16(n.length),...u16(0)]);
+    partes.push(loc, n, d);
+    central.push(new Uint8Array([...u32(0x02014b50),...u16(20),...u16(20),...u16(0x0800),
+      ...u16(0),...u16(0),...u16(0),...u32(crc),...u32(d.length),...u32(d.length),
+      ...u16(n.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(off)]), n);
+    off += loc.length + n.length + d.length;
+  }
+  const cdIni = off;
+  let cdTam = 0; central.forEach(p=>cdTam += p.length);
+  const fim = new Uint8Array([...u32(0x06054b50),...u16(0),...u16(0),
+    ...u16(arquivos.length),...u16(arquivos.length),...u32(cdTam),...u32(cdIni),...u16(0)]);
+  return new Blob([...partes,...central,fim],
+    {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+}
+
+const CABECALHO_PT = {id_caso:'Referência',matricula:'Matrícula',uf:'UF',municipio:'Município',
+  cartorio:'Ofício',empreendimento:'Empreendimento',unidade:'Unidade',
+  proprietario:'Em nome de quem está hoje',documento:'CPF/CNPJ',
+  natureza:'Natureza do domínio',fundamento:'Ato que fundamenta',
+  onus:'Ônus ativos',situacao:'Situação',observacao:'Observação',confianca:'Confiança da leitura'};
+
+function baixaXLSX(escolhidas = LINHAS, nome = 'verificacao_registral.xlsx'){
+  const dados = tabelaSaida(escolhidas);
+  const col = i => String.fromCharCode(65+i);       // ate 26 colunas, suficiente
+  const x = s => String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))
+                              .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g,'');
+  // estilos: 0 normal · 1 cabecalho · 2 verde · 3 vermelho · 4 cinza · 5 ambar
+  const styles = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<fonts count="3"><font><sz val="11"/><name val="Calibri"/></font>
+<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>
+<font><b/><sz val="11"/><name val="Calibri"/></font></fonts>
+<fills count="7"><fill><patternFill patternType="none"/></fill>
+<fill><patternFill patternType="gray125"/></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FF20154C"/><bgColor indexed="64"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFC6EFCE"/><bgColor indexed="64"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFFFC7CE"/><bgColor indexed="64"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFE9EAEB"/><bgColor indexed="64"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFFFEB9C"/><bgColor indexed="64"/></patternFill></fill></fills>
+<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>
+<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+<cellXfs count="6">
+<xf xfId="0" numFmtId="0" fontId="0" fillId="0" borderId="0" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>
+<xf xfId="0" numFmtId="0" fontId="1" fillId="2" borderId="0" applyFill="1" applyFont="1"/>
+<xf xfId="0" numFmtId="0" fontId="2" fillId="3" borderId="0" applyFill="1" applyFont="1"/>
+<xf xfId="0" numFmtId="0" fontId="2" fillId="4" borderId="0" applyFill="1" applyFont="1"/>
+<xf xfId="0" numFmtId="0" fontId="2" fillId="5" borderId="0" applyFill="1" applyFont="1"/>
+<xf xfId="0" numFmtId="0" fontId="2" fillId="6" borderId="0" applyFill="1" applyFont="1"/>
+</cellXfs>
+<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`;
+
+  // 2 verde · 3 vermelho · 4 cinza · 5 ambar — a cor vem do veredito, nao do texto
+  const ESTILO = {v:2, r:3, c:4, a:5};
+  const estiloSit = (_, linha) => ESTILO[linha._cor] || 4;
+  const cel = (r,i,v,st) =>
+    `<c r="${col(i)}${r}" t="inlineStr"${st?` s="${st}"`:''}><is><t xml:space="preserve">${x(v)}</t></is></c>`;
+
+  const linhas = [`<row r="1">${COLS_SAIDA.map((c,i)=>cel(1,i,CABECALHO_PT[c],1)).join('')}</row>`];
+  dados.forEach((o,n)=>{
+    const r=n+2;
+    linhas.push(`<row r="${r}">`+COLS_SAIDA.map((c,i)=>
+      cel(r,i,o[c], c==='situacao'?estiloSit(o[c],o):0)).join('')+`</row>`);
+  });
+
+  const larguras = [16,12,5,16,7,26,22,34,20,26,40,30,24,34,30];
+  const sheet = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<sheetViews><sheetView workbookViewId="0" tabSelected="1"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>
+<cols>${larguras.map((w,i)=>`<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`).join('')}</cols>
+<sheetData>${linhas.join('')}</sheetData>
+<autoFilter ref="A1:${col(COLS_SAIDA.length-1)}${dados.length+1}"/></worksheet>`;
+
+  baixa(zip([
+    ['[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+      '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'+
+      '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'+
+      '<Default Extension="xml" ContentType="application/xml"/>'+
+      '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'+
+      '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'+
+      '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'],
+    ['_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'],
+    ['xl/workbook.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+      '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '+
+      'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'+
+      '<sheets><sheet name="Verificação" sheetId="1" r:id="rId1"/></sheets></workbook>'],
+    ['xl/_rels/workbook.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>'+
+      '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'],
+    ['xl/styles.xml', styles],
+    ['xl/worksheets/sheet1.xml', sheet],
+  ]), nome);
+}
+
+/* -------------------------------------------------------- assistente */
+// FASE 1 — so leitura. As ferramentas rodam AQUI, sobre LINHAS; nenhuma pede matricula
+// ao cartorio nem gera cobranca. O servidor (/api/chat) so repassa ao modelo.
+const CHAT_MAX_RODADAS = 6;      // idas ao modelo por pergunta
+const CHAT_MAX_FERRAMENTAS = 4;  // ferramentas executadas por resposta do modelo
+const CHAT_MAX_PERGUNTAS = 10;   // perguntas mantidas no historico
+let CHAT = [], CHAT_OCUPADO = false;
+
+const NOMES_GRUPO = {acao:'Ação necessária', consultado:'Proprietário identificado',
+  revisar:'Revisar', resolvido:'Resolvidos', andamento:'Ainda não verificado'};
+
+function grupoDe(it){
+  const g = agrupa([it]);
+  return Object.keys(g).find(k => g[k].length) || 'revisar';
+}
+function linhasDoGrupo(grupo){
+  return (!grupo || grupo==='todas') ? LINHAS.slice() : (agrupa(LINHAS)[grupo] || []);
+}
+const curto = (v, n) => {
+  const s = String(v || '').replace(/\s+/g, ' ').trim();
+  return s ? (s.length > n ? s.slice(0, n) + '…' : s) : null;
+};
+// grupo e situacao vem do CODIGO (agrupa/tabelaSaida), nunca de texto livre — e o que o
+// modelo e instruido a tratar como autoridade. Texto livre vai curto e numa linha so,
+// para que uma instrucao escondida numa planilha colada perca espaco para se esticar.
+function compacta(it){
+  return {
+    referencia: curto(it.id_caso, 40), matricula: it.matricula || null,
+    local: curto([[it.municipio, it.uf].filter(Boolean).join('/'), it.cartorio ? `${it.cartorio}º ofício` : '']
+           .filter(Boolean).join(' · '), 60),
+    grupo: NOMES_GRUPO[grupoDe(it)], situacao: tabelaSaida([it])[0].situacao || null,
+    proprietario: curto(it.proprietario, 120),
+  };
+}
+
+function ferramenta(nome, args){
+  args = args || {};
+  if(nome==='resumo_da_tabela'){
+    const g = agrupa(LINHAS), opt = $('#alvo').selectedOptions[0];
+    return { linhas_carregadas: LINHAS.length,
+             comparando_com: opt && opt.value ? opt.dataset.nome : null,
+             por_grupo: Object.fromEntries(Object.keys(NOMES_GRUPO).map(k => [NOMES_GRUPO[k], g[k].length])) };
+  }
+  if(nome==='listar_linhas'){
+    const termo = semAcento(String(args.busca||'')).toLowerCase().trim();
+    const limite = Math.max(1, Math.min(20, Number(args.limite) || 15));
+    const achadas = linhasDoGrupo(args.grupo).filter(it => !termo ||
+      semAcento([it.id_caso, it.matricula, it.empreendimento, it.unidade, it.endereco, it.municipio,
+                 it.proprietario].join(' ')).toLowerCase().includes(termo));
+    return { total: achadas.length, mostrando: Math.min(limite, achadas.length),
+             linhas: achadas.slice(0, limite).map(compacta) };
+  }
+  if(nome==='detalhar_linha'){
+    const bruto = String(args.referencia_ou_matricula||'').trim();
+    const ref = semAcento(bruto).toLowerCase().replace(/\s+/g,'');
+    const digitos = /^[\d.\s]+$/.test(bruto) ? bruto.replace(/\D/g,'') : '';
+    const it = LINHAS.find(x => x.id_caso && semAcento(x.id_caso).toLowerCase().replace(/\s+/g,'') === ref)
+            || (digitos && LINHAS.find(x => x.matricula === digitos));
+    if(!it) return { erro: 'linha não encontrada na tabela' };
+    // Separado por procedencia: o que veio da leitura do registro e o que o cliente
+    // digitou ou colou. O texto da planilha identifica o imovel; nunca define situacao.
+    return Object.assign(compacta(it), {
+      dados_do_registro: { documento: curto(it.documento, 40), confianca: curto(it.confianca, 120),
+        natureza: curto(it.natureza, 80),
+        ato_que_fundamenta: curto(it.fundamento, 160), onus: curto(it.onus, 200),
+        observacao: curto(it.observacao, 200) },
+      texto_da_planilha: { empreendimento: curto(it.empreendimento, 80), unidade: curto(it.unidade, 80),
+        endereco: curto(it.endereco, 120) } });
+  }
+  if(nome==='filtrar_na_tela'){
+    const el = $('#buscaFila');
+    el.value = String(args.busca||'').slice(0, 80);
+    el.dispatchEvent(new Event('input'));
+    return { busca_aplicada: el.value };
+  }
+  if(nome==='exportar'){
+    const linhas = linhasDoGrupo(args.grupo);
+    if(!linhas.length) return { erro: 'não há linhas nesse grupo' };
+    const sufixo = args.grupo && args.grupo!=='todas' ? '_'+args.grupo : '';
+    if(args.formato==='csv') baixaCSV(linhas, `verificacao_registral${sufixo}.csv`);
+    else baixaXLSX(linhas, `verificacao_registral${sufixo}.xlsx`);
+    return { linhas_exportadas: linhas.length, formato: args.formato==='csv' ? 'csv' : 'xlsx' };
+  }
+  return { erro: 'ferramenta desconhecida' };
+}
+
+// Texto do modelo e escapado antes de qualquer formatacao: nada que ele escreva vira HTML.
+function formataTexto(t){
+  return esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+}
+function mostraMsg(quem, html){
+  const el = document.createElement('div');
+  el.className = 'msg ' + quem;
+  el.innerHTML = html;
+  $('#chatMsgs').appendChild(el);
+  rolaChat(true);
+  anotaUltima(el, quem);
+  return el;
+}
+
+/* ------------------------------------------------ assistente proativo */
+// Eventos da tela viram mensagens prontas: sem modelo, sem custo, e nada disso entra em
+// CHAT. O modelo so e chamado para pergunta livre. Botao de cartao chama o MESMO handler
+// do painel e confere o estado na hora do clique: nada que gasta dinheiro sai sem clique.
+const BOLHAS = {};
+const ehCelular = () => matchMedia('(max-width:1099px)').matches;
+const chatVisivel = () => ehCelular() ? $('#chat').classList.contains('aberto')
+                                       : !$('#chat').classList.contains('recolhido');
+const plural = (n, um, varios) => n === 1 ? um : varios;
+
+function rolaChat(forcar){
+  const m = $('#chatMsgs');
+  if(forcar || m.scrollHeight - m.scrollTop - m.clientHeight < 140) m.scrollTop = m.scrollHeight;
+}
+function anotaUltima(el, quem){
+  const t = el.textContent.replace(/\s+/g, ' ').trim();
+  if(t) $('#chatUltima').textContent = t.slice(0, 110);
+  if(quem !== 'eu' && !chatVisivel()){
+    const s = $('#chatSelo'); s.textContent = String((Number(s.textContent) || 0) + 1); s.hidden = false;
+  }
+}
+function mostraChat(sim){
+  const chat = $('#chat');
+  if(ehCelular()){
+    chat.classList.remove('recolhido'); $('#app').classList.remove('recolhido');
+    chat.classList.toggle('aberto', sim); document.body.classList.toggle('chat-tela-cheia', sim);
+  }else{
+    chat.classList.remove('aberto'); document.body.classList.remove('chat-tela-cheia');
+    chat.classList.toggle('recolhido', !sim); $('#app').classList.toggle('recolhido', !sim);
+  }
+  $('#chatRecolher').textContent = sim ? (ehCelular() ? '‹ voltar à tela' : 'recolher') : 'abrir';
+  $('#chatRecolher').setAttribute('aria-expanded', sim);
+  if(sim){ $('#chatSelo').hidden = true; $('#chatSelo').textContent = ''; rolaChat(true); }
+}
+
+// Cartao do assistente. html ja escapado por quem chama; acoes: [{rotulo, faz(botao), principal, sugestao}].
+// Com chave, a mesma bolha se atualiza no lugar (lote, pix, progresso) em vez de empilhar.
+function bolha(chave, html, acoes = [], opcoes = {}){
+  let el = chave ? BOLHAS[chave] : null;
+  if(el && (!el.isConnected || (opcoes.noFim && $('#chatMsgs').lastElementChild !== el))){ desativa(el); el = null; }
+  const nova = !el;
+  if(nova){
+    el = document.createElement('div');
+    el.className = 'msg ia cartao';
+    if(opcoes.vivo) el.setAttribute('aria-live', 'polite');
+    $('#chatMsgs').appendChild(el);
+    if(chave) BOLHAS[chave] = el;
+  }
+  el._acoes = acoes;
+  el.innerHTML = html + (acoes.length ? '<div class="acoes">' + acoes.map((a, i) =>
+    `<button type="button" class="acao-chat${a.principal ? ' principal' : ''}${a.sugestao ? ' sugestao' : ''}" ` +
+    `data-i="${i}">${esc(a.rotulo)}</button>`).join('') + '</div>' : '');
+  rolaChat(nova);
+  if(nova) anotaUltima(el, 'ia');
+  return el;
+}
+function desativa(el){ if(el) el.querySelectorAll('.acao-chat').forEach(b => { b.disabled = true; }); }
+function jaFeito(b){ b.disabled = true; b.textContent = 'isso já foi feito'; }
+function vaiPara(sel, antes){
+  if(antes) antes();
+  const el = $(sel);
+  if(ehCelular()) mostraChat(false);
+  if(el && !el.hidden) el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function avisaBoasVindas(){
+  bolha(null, '<b>O que você quer consultar?</b> <br><span class="mini">Digite a matrícula (ex.: 11695 PA Belém 3), ' +
+    'cole a lista ou mande a planilha pelo clipe.</span>');
+}
+
+let TIMER_LOTE = null;
+function agendaLote(){ clearTimeout(TIMER_LOTE); TIMER_LOTE = setTimeout(avisaLote, 450); }
+function avisaLote(){
+  if(COBRANCA || rodando || GERANDO || !$('#pagamento').hidden) return;
+  if(!LINHAS.length){ if(BOLHAS.lote && BOLHAS.lote.isConnected) BOLHAS.lote.remove(); delete BOLHAS.lote; return; }
+  const prontas = loteProntas(), o = orcamentoAtual(), unica = abaAtiva() === 'unica';
+  const pend = LINHAS.filter(i => i.estado === 'pendente');
+  const repetidas = pend.filter(i => i.repetida).length;
+  const lidas = LINHAS.filter(i => i.estado === 'ok').length;
+  const motivos = {};
+  pend.filter(i => !i.repetida).forEach(i => String(i.observacao || '').split('; ').filter(Boolean).forEach(m => {
+    const k = /fora da tabela/.test(m) ? 'UF fora da tabela de emolumentos' : m;
+    motivos[k] = (motivos[k] || 0) + 1;
+  }));
+  const ROTULO = {'sem número de matrícula':'matrícula', 'sem UF':'UF', 'sem município':'município',
+                  'sem ofício de registro':'ofício', 'UF fora da tabela de emolumentos':'UF fora da tabela'};
+  const semMatricula = motivos['sem número de matrícula'] || 0;
+  let html;
+  if(LINHAS.length === 1 && unica){
+    const it = LINHAS[0];
+    const local = [[it.municipio, it.uf].filter(Boolean).join('/'), it.cartorio ? `${it.cartorio}º ofício` : '']
+      .filter(Boolean).join(' · ');
+    html = it.estado === 'ok' ? `Matrícula <b>${esc(it.matricula)}</b> já foi verificada nesta sessão.`
+      : it.estado === 'pendente' ? `Matrícula <b>${esc(it.matricula || '—')}</b>: ${esc(it.observacao)}.`
+      : `Matrícula <b>${esc(it.matricula)}</b>${local ? ' · ' + esc(local) : ''}. Consulta: <b>R$ ${brl(o.total)}</b>.`;
+  }else{
+    // Uma linha so: o detalhe de cada imovel fica na tabela, nao na conversa.
+    // UF, municipio e oficio faltam juntos quase sempre: viram um "sem cartorio" so.
+    const semLocal = pend.filter(i => !i.repetida && i.matricula && /sem UF|sem município|sem ofício/.test(i.observacao || '')).length;
+    const outrasFaltas = Object.entries(motivos)
+      .filter(([m]) => !['sem número de matrícula', 'sem UF', 'sem município', 'sem ofício de registro'].includes(m))
+      .map(([m, n]) => /fora da tabela/.test(m) ? `${n} com UF fora da tabela` : `${ROTULO[m] || m} em ${n}`);
+    const partes = [
+      prontas.length ? `<b>${prontas.length}</b> ${plural(prontas.length, 'pronto', 'prontos')} para consultar — <b>R$ ${brl(o.total)}</b>` : '',
+      semMatricula ? `<b>${semMatricula}</b> sem matrícula` : '',
+      semLocal ? `<b>${semLocal}</b> sem cartório` : '',
+      ...outrasFaltas.map(esc),
+      repetidas ? `${repetidas} ${plural(repetidas, 'repetida', 'repetidas')}` : '',
+      lidas ? `${lidas} já ${plural(lidas, 'verificada', 'verificadas')}` : '',
+    ].filter(Boolean);
+    html = prontas.length === LINHAS.length
+      ? `<b>${prontas.length}</b> ${plural(prontas.length, 'imóvel pronto', 'imóveis prontos')} para consultar — <b>R$ ${brl(o.total)}</b>.`
+      : `${LINHAS.length} ${plural(LINHAS.length, 'imóvel', 'imóveis')}: ${partes.join(' · ')}.`;
+  }
+  const acoes = [];
+  if(prontas.length) acoes.push({ principal: true,
+    rotulo: prontas.length === 1 ? `Verificar — R$ ${brl(o.total)}` : `Verificar ${prontas.length} — R$ ${brl(o.total)}`,
+    faz: b => { if($('#btnVerificar').disabled || COBRANCA || rodando) return jaFeito(b); rodar(); } });
+  if(!unica && Object.keys(motivos).some(m => /UF|município|ofício/.test(m))) acoes.push({
+    rotulo: 'Completar UF, município e ofício', faz: () => { vaiPara('#contexto'); $('#ctxUf').focus(); } });
+  if(semMatricula) acoes.push({ rotulo: semMatricula === 1 ? 'Pedir à Arbitralis que localize a matrícula'
+                                                          : `Pedir à Arbitralis que localize as ${semMatricula} matrículas`,
+    faz: () => pedeLocalizacao(pend.filter(i => !i.matricula)) });
+  if(!unica && pend.length) acoes.push({ rotulo: 'Ver as que ficaram de fora',
+    faz: () => vaiPara('#grpRevisar', () => { $('#grpRevisar').open = true; }) });
+  bolha('lote', html, acoes, {noFim: true});
+}
+// Sem matricula a consulta nao sai. O cliente manda as linhas para a Arbitralis localizar,
+// pelo proprio e-mail dele e com os dados que ele mesmo colou; nada sai daqui sozinho.
+const CONTATO_ARBITRALIS = 'henrique@arbitralis.com.br';
+function pedeLocalizacao(linhas){
+  const lista = linhas.slice(0, 30).map(i => [i.id_caso, i.empreendimento, i.unidade,
+    i.endereco || [i.municipio, i.uf].filter(Boolean).join('/')].filter(Boolean).join(' · ')).join('\n');
+  const corpo = `Olá, Arbitralis.\n\nPodem localizar a matrícula destes imóveis?\n\n${lista}` +
+    (linhas.length > 30 ? `\n\n(e mais ${linhas.length - 30} linhas)` : '') + '\n';
+  abreEmail(`mailto:${CONTATO_ARBITRALIS}?subject=${encodeURIComponent('Localizar matrículas')}&body=${encodeURIComponent(corpo)}`);
+}
+function abreEmail(url){ location.href = url; }
+
+function avisaSemColuna(nome, cabecalho = []){
+  const lidas = cabecalho.map(c => String(c).trim()).filter(Boolean).slice(0, 10);
+  bolha(null, `Não encontrei em <b>${esc(nome)}</b> uma coluna de <b>matrícula</b> (ou de endereço). ` +
+    (lidas.length ? `Colunas lidas: ${esc(lidas.join(', '))}. ` : '') + 'Renomeie a coluna ou use o modelo.',
+    [{ rotulo: 'Baixar o modelo de planilha', faz: () => $('#modelo').click() }]);
+}
+function avisaExcel(nome){
+  bolha(null, `<b>${esc(nome)}</b> é um arquivo do Excel. Por enquanto o painel lê CSV: no Excel, use ` +
+    '<b>Arquivo › Salvar como › CSV UTF-8</b> e envie de novo.',
+    [{ rotulo: 'Baixar o modelo de planilha', faz: () => $('#modelo').click() }]);
+}
+function avisaPagamento(){
+  const o = orcamentoAtual(), n = loteProntas().length;
+  bolha('pagamento', `<b>R$ ${brl(o.total)}</b> para ${n} ${plural(n, 'matrícula', 'matrículas')}. ` +
+    'Preencha o pagador ao lado e gere o PIX.',
+    [{ rotulo: 'Preencher o pagamento', principal: true,
+       faz: b => { if($('#pagamento').hidden || COBRANCA) return jaFeito(b); vaiPara('#pagamento'); $('#pagNome').focus(); } }],
+    {noFim: true});
+}
+function avisaPix(){
+  const r = COBRANCA; if(!r) return;
+  let qr = '';
+  // O mesmo QR do painel, copiado do desenho que ja existe: nao ha segundo gerador.
+  try{ const c = $('#pagQr canvas'); if(c) qr = `<div class="pix-chat"><img alt="QR Code do PIX" src="${c.toDataURL('image/png')}"></div>`; }
+  catch(e){}
+  const acoes = [{ rotulo: 'Copiar código PIX', principal: true, faz: async b => {
+    if(COBRANCA !== r) return jaFeito(b);   // cobranca descartada ou trocada: codigo velho nao se copia
+    try{ await navigator.clipboard.writeText(r.pix || ''); b.textContent = 'Código copiado'; }
+    catch(e){ vaiPara('#pagamento'); $('#pagPayload').select(); }
+  } }];
+  if(r.fatura) acoes.push({ rotulo: 'Abrir a fatura',
+    faz: b => { if(COBRANCA !== r) return jaFeito(b); window.open(r.fatura, '_blank', 'noopener'); } });
+  bolha('pix', `<b>PIX de R$ ${brl(r.valor)}</b> — pague pelo aplicativo do banco.${qr}` +
+    '<span class="mini estado-pix"><span class="girando"></span>aguardando o pagamento…</span>', acoes, {vivo: true});
+}
+function avisaPago(){
+  const el = BOLHAS.pix; if(!el || !el.isConnected) return;
+  const st = el.querySelector('.estado-pix');
+  if(st) st.innerHTML = '<b style="color:var(--verde)">Pagamento confirmado.</b>';
+  desativa(el);
+  anotaUltima(el, 'ia');
+}
+let ULTIMO_PROGRESSO = 0;
+function acoesProgresso(){
+  return parar ? [] : [{ rotulo: 'Parar', faz: b => { parar = true; b.disabled = true; b.textContent = 'parando…'; } }];
+}
+function avisaInicio(n){
+  desativa(BOLHAS.progresso); delete BOLHAS.progresso;
+  ULTIMO_PROGRESSO = 0;
+  bolha('progresso', `Consultando <b>${n}</b> ${plural(n, 'matrícula', 'matrículas')} no cartório…`, acoesProgresso());
+}
+function avisaProgresso(feitas, total, faltam){
+  const agora = Date.now();
+  if(feitas < total && agora - ULTIMO_PROGRESSO < 1500) return;
+  ULTIMO_PROGRESSO = agora;
+  if(!BOLHAS.progresso || !BOLHAS.progresso.isConnected) return;
+  bolha('progresso', `Consultando no cartório: <b>${feitas} de ${total}</b>${faltam ? ` · faltam ~${esc(faltam)}` : ''}.`,
+    feitas < total ? acoesProgresso() : []);
+}
+function avisaFim(fila, gastou){
+  if(BOLHAS.progresso && BOLHAS.progresso.isConnected) bolha('progresso', `Consulta encerrada em ${decorrido(gastou)}.`, []);
+  const g = agrupa(LINHAS), certas = fila.filter(i => i.estado === 'ok').length;
+  const falhas = LINHAS.filter(i => i.estado === 'erro').length;
+  // O resumo exporta o lote que descreve, mesmo depois de a tela mudar de lista.
+  const doLote = LINHAS.slice();
+  const baixar = [{ rotulo: 'Baixar Excel', faz: () => baixaXLSX(doLote) }, { rotulo: 'Baixar CSV', faz: () => baixaCSV(doLote) }];
+  const podeTentar = () => !!COBRANCA && !rodando &&
+    LINHAS.some(i => i.estado === 'erro' && !i.aguardaArbitralis && !i.precisaNovaCobranca);
+  const tentar = { rotulo: 'Tentar de novo as que falharam', faz: b => { if(!podeTentar()) return jaFeito(b); rodar(); } };
+  if(LINHAS.length === 1 && abaAtiva() === 'unica'){
+    const it = LINHAS[0];
+    if(it.estado === 'ok'){
+      const sit = SIT[it.situacao] || ['c', it.situacao || 'Indeterminado'];
+      bolha(null, `Matrícula <b>${esc(it.matricula)}</b>: <span class="tag ${sit[0]}"><i class="ponto"></i>${esc(sit[1])}</span>` +
+        (it.proprietario ? `<br><span class="mini">Em nome de: ${esc(curto(it.proprietario, 90))}</span>` : ''),
+        [{ rotulo: 'Ver detalhe', principal: true, faz: () => vaiPara('#cartao') }, ...baixar], {vivo: true});
+    }else{
+      bolha(null, `A consulta da matrícula <b>${esc(it.matricula)}</b> não terminou: ${esc(curto(it.observacao, 240))}`,
+        [...(podeTentar() ? [tentar] : []), { rotulo: 'Ver na tela', faz: () => vaiPara('#cartao') }], {vivo: true});
+    }
+    return;
+  }
+  const item = (cor, n, texto) => n ? `<li><i class="ponto ${cor}"></i><span><b>${n}</b> ${texto}</span></li>` : '';
+  const html = `Pronto: <b>${certas} de ${fila.length}</b> ${plural(fila.length, 'verificada', 'verificadas')} ` +
+    `em ${decorrido(gastou)}.<ul class="lista-grupos">` +
+    item('r', g.acao.length, 'ainda no nome de vocês') +
+    item('v', g.resolvido.length, plural(g.resolvido.length, 'já transferida', 'já transferidas')) +
+    item('a', g.revisar.length, 'para revisar') +
+    item('c', g.consultado.length, 'com proprietário identificado') + '</ul>' +
+    (falhas ? `<span class="mini">${falhas} ${plural(falhas, 'linha falhou', 'linhas falharam')} — o motivo está na tela.</span>` : '');
+  const acoes = [];
+  if(g.acao.length) acoes.push({ rotulo: 'Ver as que estão no nome de vocês', principal: true,
+    faz: () => vaiPara('#grpAcao', () => { $('#grpAcao').open = true; }) });
+  if(g.revisar.length) acoes.push({ rotulo: 'Ver as de revisar', faz: () => vaiPara('#grpRevisar', () => { $('#grpRevisar').open = true; }) });
+  if(podeTentar()) acoes.push(tentar);
+  acoes.push(...baixar);
+  if(g.revisar.length) acoes.push({ rotulo: 'Quais precisam de revisão e por quê?', sugestao: true,
+    faz: () => perguntar('Quais precisam de revisão e por quê?') });
+  bolha(null, html, acoes, {vivo: true});
+}
+function avisaRetomada(tipo, faltam, idade, valor){
+  const clica = sel => b => { const alvo = $(sel); if(!alvo) return jaFeito(b); alvo.click(); desativa(BOLHAS.retomada); };
+  if(tipo === 'link'){
+    bolha('retomada', `Há um lote guardado neste navegador${esc(idade)}. Para retomá-lo, abra o link completo enviado pela Arbitralis.`);
+    return;
+  }
+  const html = tipo === 'paga'
+    ? `Há um <b>lote pago</b> aguardando${esc(idade)}: ${faltam} ${plural(faltam, 'matrícula não concluída', 'matrículas não concluídas')}.`
+    : tipo === 'aberta' ? `Há um <b>PIX gerado e ainda não pago</b>${esc(idade)} (R$ ${brl(valor)}).`
+    : `Há um lote guardado neste navegador${esc(idade)}, mas não consegui conferir a cobrança agora.`;
+  const acoes = tipo === 'aberta'
+    ? [{ rotulo: 'Ver o PIX de novo', principal: true, faz: clica('#btnRetomar') }, { rotulo: 'Cancelar esta cobrança', faz: clica('#btnDescartar') }]
+    : [{ rotulo: tipo === 'paga' ? 'Retomar sem pagar de novo' : 'Tentar retomar', principal: true, faz: clica('#btnRetomar') },
+       { rotulo: 'Descartar', faz: clica('#btnDescartar') }];
+  bolha('retomada', html, acoes, {vivo: true});
+}
+
+/* ------------------------------------------------ entrada pelo assistente */
+// Roteador por FORMA do texto, nunca pelo que ele "parece" pedir: lista e e-mail vao para
+// os mesmos parsers das abas (que nao obedecem instrucao) e nunca chegam ao modelo. So
+// uma linha curta sem cara de lista vira pergunta.
+function formaDoTexto(t){
+  const linhas = t.split('\n').map(l => l.trim()).filter(Boolean);
+  if(linhas.some(l => /^(TRIB|PROC)[\s.\-]?\s*[\d.\/-]+/i.test(l))) return 'email';
+  const temCaraDeLinha = l => /^\d[\d.]*([\s,;\/|]|$)/.test(l);
+  if(linhas.length > 1) return linhas.filter(temCaraDeLinha).length >= Math.ceil(linhas.length / 2) ? 'lista' : 'nao-reconhecido';
+  if(/^\d[\d.]*[\s,;\/|]+[A-Za-z]{2}([\s,;\/|]|$)/.test(linhas[0] || '')) return 'lista';
+  return t.length > CHAT_MAX_TEXTO ? 'nao-reconhecido' : 'pergunta';
+}
+function trocaAba(aba){
+  const b = document.querySelector(`.abas button[data-aba="${aba}"]`);
+  if(b && abaAtiva() !== aba) b.click();
+}
+function confirmaSubstituir(){
+  const lidas = LINHAS.filter(i => i.estado === 'ok' || i.estado === 'erro').length;
+  if(!lidas) return Promise.resolve(true);
+  return new Promise(ok => bolha(null, `Isso troca a lista atual, que tem <b>${lidas}</b> ` +
+    `${plural(lidas, 'resultado', 'resultados')}. As já verificadas nesta sessão não são cobradas de novo.`,
+    [{ rotulo: 'Trocar a lista', principal: true, faz: b => { desativa(b.closest('.cartao')); ok(true); } },
+     { rotulo: 'Manter a atual', faz: b => { desativa(b.closest('.cartao')); ok(false); } }]));
+}
+function listaTravada(){
+  if(!(COBRANCA || rodando || GERANDO)) return false;
+  bolha(null, 'A lista está travada enquanto há cobrança em aberto ou consulta em andamento. Para enviar outra, use Limpar.');
+  return true;
+}
+async function encaminha(texto){
+  texto = String(texto || '').trim();
+  if(!texto) return;
+  const forma = formaDoTexto(texto);
+  if(forma === 'pergunta') return perguntar(texto);
+  const n = texto.split('\n').filter(l => l.trim()).length;
+  mostraMsg('eu', esc(n === 1 ? texto.slice(0, 120) : `Lista com ${n} linhas`));
+  if(forma === 'nao-reconhecido'){ bolha(null, esc(AVISO_COLAR)); return; }
+  // A trava e conferida de novo depois da confirmacao: o estado pode ter mudado enquanto ela esperava.
+  if(listaTravada() || !(await confirmaSubstituir()) || listaTravada()) return;
+  if(forma === 'email'){ trocaAba('lista'); $('#txtLista').value = texto; }
+  else if(n === 1){
+    const [o] = deLista(texto);
+    if(o && o.uf && o.municipio && o.cartorio){
+      trocaAba('unica');
+      $('#uMat').value = o.matricula; $('#uUf').value = o.uf; $('#uMun').value = o.municipio; $('#uOf').value = o.cartorio;
+    }else{ trocaAba('lista'); $('#txtLista').value = texto; }
+  }else{ trocaAba('lista'); $('#txtLista').value = texto; }
+  recarrega();
+}
+async function encaminhaArquivo(f){
+  if(!f) return;
+  mostraMsg('eu', esc(`Planilha: ${f.name}`));
+  if(listaTravada() || !(await confirmaSubstituir()) || listaTravada()) return;
+  trocaAba('csv');
+  if(LE_ARQUIVO) LE_ARQUIVO(f);
+}
+
+// Poda perguntas antigas INTEIRAS: nunca separa uma chamada de ferramenta da resposta
+// dela, que o Gemini recusaria. Roda ANTES da pergunta nova entrar, com tres limites:
+//   - ate 9 perguntas antigas (a nova completa 10);
+//   - ate 26 entradas: +1 da pergunta nova e +12 de 6 idas com ferramenta = 39, abaixo
+//     das 40 que o servidor aceita;
+//   - ate 16 mil caracteres: sobram 24 mil dos 40 mil do servidor para a pergunta em curso.
+const CHAT_MAX_ENTRADAS = 26;
+const CHAT_MAX_CARACTERES = 16000;
+const CHAT_MAX_TEXTO = 200;
+const AVISO_COLAR = 'Não reconheci imóveis nesse texto. Envie uma matrícula por linha (ex.: 11695 PA Belém 3), ' +
+  'o trecho do e-mail com a referência TRIB ou a planilha pelo clipe.';
+
+function podaConversa(){
+  const inicios = CHAT.map((c, i) => c.role==='user' && c.parts.some(p => typeof p.text==='string') ? i : -1)
+                      .filter(i => i >= 0);
+  const excede = k => inicios.length - k >= CHAT_MAX_PERGUNTAS
+                   || CHAT.length - inicios[k] > CHAT_MAX_ENTRADAS
+                   || JSON.stringify(CHAT.slice(inicios[k])).length > CHAT_MAX_CARACTERES;
+  let k = 0;
+  while(k < inicios.length && excede(k)) k++;
+  if(k > 0) CHAT = k < inicios.length ? CHAT.slice(inicios[k]) : [];
+}
+
+async function perguntar(texto){
+  texto = String(texto||'').trim();
+  if(!texto || CHAT_OCUPADO) return;
+  // Defesa em profundidade: as travas de colar/soltar protegem o campo; esta protege
+  // qualquer outro caminho (preenchimento automatico, codigo). Lista nao vira conversa.
+  if(texto.includes('\n') || texto.length > CHAT_MAX_TEXTO){ mostraMsg('aviso', AVISO_COLAR); return; }
+  CHAT_OCUPADO = true; $('#chatEnviar').disabled = true;
+  mostraMsg('eu', esc(texto));
+  const resposta = mostraMsg('ia', '<span class="girando"></span>');
+  // Poda ANTES de marcar o ponto de retorno. Com a poda depois, o indice guardado era
+  // do array antigo, e o desfazer do erro nao desfazia nada.
+  podaConversa();
+  const antes = CHAT.length;
+  CHAT.push({ role:'user', parts:[{ text: texto }] });
+  try{
+    for(let rodada = 0; rodada < CHAT_MAX_RODADAS; rodada++){
+      const r = await chamar('chat', { conteudos: CHAT });
+      const partes = r.partes || [];
+      if(!partes.length) throw new Error('resposta vazia');
+      // As partes voltam INTACTAS no historico: a thoughtSignature e obrigatoria.
+      CHAT.push({ role:'model', parts: partes });
+      const chamadas = partes.filter(p => p.functionCall);
+      if(!chamadas.length){
+        resposta.innerHTML = formataTexto(partes.map(p => p.text || '').join('').trim() || '—');
+        anotaUltima(resposta, 'ia');
+        return;
+      }
+      // Toda chamada precisa de resposta; so as primeiras executam de verdade.
+      CHAT.push({ role:'user', parts: chamadas.map((p, i) => ({ functionResponse: {
+        name: p.functionCall.name,
+        ...(p.functionCall.id ? { id: p.functionCall.id } : {}),
+        response: { resultado: i < CHAT_MAX_FERRAMENTAS
+          ? ferramenta(p.functionCall.name, p.functionCall.args)
+          : { erro: 'limite de ferramentas por resposta' } } } })) });
+    }
+    resposta.innerHTML = 'Não consegui concluir. Tente perguntar de outro jeito.';
+    anotaUltima(resposta, 'ia');
+  }catch(e){
+    // Desfaz a pergunta que falhou: um historico pela metade quebraria a proxima.
+    CHAT = CHAT.slice(0, antes);
+    resposta.className = 'msg aviso';
+    resposta.textContent = 'O assistente falhou: ' + e.message;
+    anotaUltima(resposta, 'ia');
+  }finally{
+    CHAT_OCUPADO = false; $('#chatEnviar').disabled = false;
+  }
+}
+
+/* ------------------------------------------------------------ wiring */
+
+document.addEventListener('DOMContentLoaded',()=>{
+  mostraChat(!ehCelular());
+  avisaBoasVindas();
+  // empresa vendedora — e sempre a mesma no dia a dia, entao fica dita numa linha,
+  // nao num seletor pedindo escolha a cada consulta
+  const sel = $('#alvo');
+  sel.innerHTML = '<option value="">— só quero saber quem é o dono —</option>' +
+    GRUPOS.map(g=>{ const n = (g.a_confirmar||[]).length;
+      return `<option value="${esc(g.id)}" data-nome="${esc(g.nome)}" `+
+        `data-cnpjs='${JSON.stringify(g.cnpjs)}' data-aconfirmar='${JSON.stringify(g.a_confirmar||[])}'>`+
+        `${esc(g.nome)}${n ? (g.id==='grupo' ? ` (${n} a confirmar)` : ' (a confirmar)') : ''}</option>`; }).join('');
+  if(GRUPOS.length) sel.selectedIndex = 1;
+  const mostraAlvo = () => {
+    const o = sel.selectedOptions[0];
+    $('#alvoNome').textContent = o && o.value ? o.dataset.nome : 'ninguém (só quem é o dono)';
+  };
+  mostraAlvo();
+  $('#trocarAlvo').onclick = () => {
+    const escondido = sel.hidden;
+    sel.hidden = !escondido;
+    $('#trocarAlvo').hidden = escondido;
+    if(escondido) sel.focus();
+  };
+  sel.onchange = () => { sel.hidden = true; $('#trocarAlvo').hidden = false;
+                         mostraAlvo(); recarrega(); };
+
+  // abas
+  document.querySelectorAll('.abas button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('.abas button').forEach(o=>o.setAttribute('aria-selected', o===b));
+    document.querySelectorAll('.aba-corpo').forEach(c=>c.hidden = c.dataset.corpo!==b.dataset.aba);
+    recarrega();
+  });
+
+  ['#uMat','#uUf','#uMun','#uOf','#txtLista','#ctxUf','#ctxMun','#ctxOf']
+    .forEach(s=>$(s).addEventListener('input', recarrega));
+
+  // Enter em qualquer campo da consulta unica ja verifica
+  ['#uMat','#uUf','#uMun','#uOf'].forEach(s=>$(s).addEventListener('keydown', e=>{
+    if(e.key==='Enter' && !$('#btnVerificar').disabled) rodar();
+  }));
+
+  // csv
+  const zona=$('#zona'), inp=$('#arq');
+  const leArquivo = f => {
+    if(!f || COBRANCA || rodando || GERANDO) return;
+    const r=new FileReader();
+    r.onload = e => {
+      // Planilha do sistema costuma sair como .xlsx (um ZIP) ou .xls: lida como texto, virava
+      // lixo e a mensagem mandava procurar a coluna errada. Aqui ela e reconhecida e orientada.
+      const b = new Uint8Array(e.target.result.slice(0, 4));
+      if(/\.xlsx?$/i.test(f.name) || (b[0] === 0x50 && b[1] === 0x4B) || (b[0] === 0xD0 && b[1] === 0xCF)){
+        CSV_BRUTO = [];
+        $('#nomeArq').textContent = `${f.name} — arquivo do Excel: salve como CSV e envie de novo.`;
+        avisaExcel(f.name); recarrega(); return;
+      }
+      const texto = decodifica(e.target.result);
+      CSV_BRUTO = deCSV(texto);
+      $('#nomeArq').textContent = CSV_BRUTO.length
+        ? `${f.name} · ${CSV_BRUTO.length} ${CSV_BRUTO.length===1?'linha':'linhas'}`
+        : `${f.name} — não encontrei a coluna "matricula". Use o modelo.`;
+      if(!CSV_BRUTO.length) avisaSemColuna(f.name, parseCSV(texto)[0] || []);
+      recarrega();
+    };
+    r.readAsArrayBuffer(f);
+  };
+  LE_ARQUIVO = leArquivo;
+  zona.onclick = () => inp.click();
+  inp.onchange = e => leArquivo(e.target.files[0]);
+  ['dragenter','dragover'].forEach(ev=>zona.addEventListener(ev,e=>{e.preventDefault();zona.classList.add('over')}));
+  ['dragleave','drop'].forEach(ev=>zona.addEventListener(ev,e=>{e.preventDefault();zona.classList.remove('over')}));
+  zona.addEventListener('drop', e=>leArquivo(e.dataTransfer.files[0]));
+
+  $('#modelo').onclick = e => {
+    e.preventDefault();
+    baixa(new Blob(['\uFEFF'+"id_caso,matricula,uf,municipio,cartorio,empreendimento,unidade\nTRIB.000000/2026,11695,PA,Belém,3,Condomínio Exemplo,Vaga de garagem nº 49\n"],{type:'text/csv;charset=utf-8'}), 'modelo_matriculas.csv');
+  };
+
+  // Retomada: se houver lote pago sem terminar, oferece continuar antes de tudo.
+  // O registro e gravado ao gerar o PIX, antes do pagamento: por isso a tela confere a
+  // cobranca no gateway antes de dizer "pago".
+  const guardado = loteGuardado();
+  if(guardado){
+    const cob = cobrancaGuardada(guardado);
+    const faltam = (guardado.linhas||[]).filter(i=>i.estado==='fila' || i.estado==='erro').length;
+    const idade = guardado.dias >= 1 ? ` (de ${guardado.dias} ${guardado.dias===1?'dia':'dias'} atrás)` : '';
+    const mostra = html => { $('#caixaErro').innerHTML = `<div class="aviso">${html}</div>`; };
+    const restaura = () => {
+      COBRANCA = cob; LINHAS = guardado.linhas;
+      let aviso = '';
+      if(guardado.alvo != null){
+        if([...sel.options].some(o => o.value === guardado.alvo)) sel.value = guardado.alvo;   // mesma empresa de antes
+        else {
+          // Empresa saiu do cadastro: so o proprietario, nunca um SIM/NAO contra outra empresa.
+          sel.value = '';
+          aviso = 'A empresa comparada neste lote não está mais cadastrada: as matrículas que faltam mostrarão só o proprietário.';
+        }
+        mostraAlvo();
+      }
+      $('#caixaErro').innerHTML = '';
+      // Fora da caixa de erros: executar() a limpa ao comecar e o aviso sumiria.
+      $('#avisoRetomada').textContent = aviso; $('#avisoRetomada').hidden = !aviso;
+      $('#resultado').hidden = false; $('#legenda').hidden = false;
+      atualizaTrava(); pinta(); orca();
+    };
+    const botoes = (retomar, descartar) =>
+      `<button class="link" id="btnRetomar">${retomar}</button> · <button class="link" id="btnDescartar">${descartar}</button>`;
+    const liga = aoRetomar => {
+      $('#btnRetomar').onclick = aoRetomar;
+      $('#btnDescartar').onclick = async () => {
+        if(!(await largaCobranca(cob))) return;
+        esqueceLote(); $('#caixaErro').innerHTML = '';
+      };
+    };
+    mostra('<span class="girando"></span>Conferindo a cobrança guardada neste navegador…');
+    chamar('cobranca', {consultar: cob.id}).then(st => {
+      if(String(st.status).toUpperCase() === 'CANCELLED' && !st.pago){
+        esqueceLote(); $('#caixaErro').innerHTML = ''; return;
+      }
+      if(st.pago){
+        mostra(`<b>Há um lote pago aguardando${idade}.</b> Cobrança ${esc(cob.id)} · ${faltam} ` +
+          `${faltam===1?'matrícula não concluída':'matrículas não concluídas'}. ` +
+          botoes('retomar sem pagar de novo', 'descartar'));
+        liga(() => { restaura(); executar(); });
+        avisaRetomada('paga', faltam, idade);
+      } else {
+        mostra(`<b>Há um PIX gerado e ainda não pago${idade}.</b> Cobrança ${esc(cob.id)} · ` +
+          `R$ ${brl(st.valor)}. ` + botoes('ver o PIX de novo', 'cancelar esta cobrança'));
+        liga(() => { restaura(); mostraPagamento(); mostraPix(); });
+        avisaRetomada('aberta', 0, idade, st.valor);
+      }
+    }).catch(e => {
+      if(e.status === 401){   // link sem codigo valido: "tentar retomar" nunca funcionaria
+        mostra(`<b>Há um lote guardado neste navegador${idade}.</b> Para retomá-lo, abra o link completo ` +
+          'enviado pela Arbitralis — este endereço não tem o código de acesso válido.');
+        avisaRetomada('link', 0, idade);
+        return;
+      }
+      mostra(`<b>Há um lote guardado neste navegador${idade}.</b> Não consegui conferir a cobrança ` +
+        `agora (${esc(e.message)}). ` + botoes('tentar retomar', 'descartar'));
+      liga(() => { restaura(); executar(); });
+      avisaRetomada('sem-conferir', faltam, idade);
+    });
+  }
+
+  // Link sem codigo ou com codigo errado aparece na abertura, nao depois de montar o lote.
+  const avisaAcesso = msg => { bolha('acesso', `<b>Este link não libera consultas.</b> ${esc(msg)} ` +
+    'Use o link completo enviado pela Arbitralis.'); $('#caixaAcesso').innerHTML =
+    `<div class="erro-caixa"><b>Este link não libera consultas.</b> ${esc(msg)} ` +
+    'Use o link completo enviado pela Arbitralis.</div>'; };
+  if(!ACESSO) avisaAcesso('O endereço está sem o código de acesso.');
+  else chamar('cobranca', {ping:true}).catch(e => { if(e.status === 401) avisaAcesso(e.message + '.'); });
+
+  $('#btnVerificar').onclick = rodar;
+  $('#btnCobrar').onclick = geraCobranca;
+  $('#btnCopiar').onclick = async () => {
+    try{ await navigator.clipboard.writeText($('#pagPayload').value);
+         $('#btnCopiar').textContent = 'Copiado'; }
+    catch(e){ $('#pagPayload').select(); }
+    setTimeout(()=>$('#btnCopiar').textContent='Copiar código', 2000);
+  };
+  $('#btnParar').onclick = () => { parar = true; };
+  $('#btnLimpar').onclick = async () => {
+    if(rodando) return;
+    if(COBRANCA && !(await largaCobranca(COBRANCA))) return;
+    // Lote guardado ainda nao retomado: Limpar tambem o apaga, entao cancela o PIX dele antes.
+    const pendente = !COBRANCA && loteGuardado();
+    if(pendente && !(await largaCobranca(cobrancaGuardada(pendente)))) return;
+    ['#uMat','#uUf','#uMun','#uOf','#txtLista'].forEach(s=>$(s).value='');
+    $('#nomeArq').textContent='';
+    CSV_BRUTO=[]; LINHAS=[]; $('#caixaErro').innerHTML='';
+    clearInterval(POLL); POLL=null; COBRANCA=null; LOTE_PAGO=null; esqueceLote();
+    $('#pagamento').hidden=true; $('#pagLado').hidden=false; $('#pagPix').hidden=true;
+    $('#btnCobrar').disabled=false; $('#btnCobrar').textContent='Gerar PIX';
+    BUSCA=''; $('#buscaFila').value=''; ABERTAS.clear();
+    $('#avisoRetomada').hidden = true;
+    ['lote', 'pagamento', 'pix', 'progresso', 'retomada'].forEach(k => { desativa(BOLHAS[k]); delete BOLHAS[k]; });
+    atualizaTrava(); recarrega();
+  };
+  $('#btnCsv').onclick = () => baixaCSV();
+  $('#btnXlsx').onclick = () => baixaXLSX();
+
+  $('#buscaFila').addEventListener('input', e => {
+    const havia = BUSCA;
+    BUSCA = semAcento(e.target.value).toLowerCase().trim();
+    // limpou a busca: grupos voltam ao padrao (pendencias abertas, resolvidos fechado)
+    if(havia && !BUSCA){ $('#grpAcao').open = true; $('#grpRevisar').open = true; $('#grpResolvido').open = false; }
+    pinta();
+  });
+
+  $('#filaGrupos').addEventListener('click', e => {
+    const tr = e.target.closest('tr[data-chave]');
+    if(!tr) return;
+    const k = tr.dataset.chave;
+    if(ABERTAS.has(k)) ABERTAS.delete(k); else ABERTAS.add(k);
+    tr.classList.toggle('aberta');
+  });
+
+  try{
+    if(!localStorage.getItem('legenda_vista')){
+      $('#legendaAberta').open = true;
+      localStorage.setItem('legenda_vista', '1');
+    }
+  }catch(e){}
+
+  // assistente: fixo e aberto no computador; barra embaixo no celular
+  matchMedia('(max-width:1099px)').addEventListener('change', () => mostraChat(!ehCelular()));
+  $('#chatRecolher').addEventListener('click', e => { e.stopPropagation(); mostraChat(!chatVisivel()); });
+  $('#chatCab').addEventListener('click', () => { if(!chatVisivel()) mostraChat(true); });
+  // Enviar passa pelo roteador: lista, e-mail e planilha vao para os parsers; so pergunta vai ao modelo.
+  $('#chatForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const t = $('#chatTexto').value;
+    if(!t.trim()) return;
+    // Pergunta durante uma resposta em curso: o texto fica na caixa, nao some em silencio.
+    if(CHAT_OCUPADO && formaDoTexto(t.trim()) === 'pergunta'){
+      mostraMsg('aviso', 'Aguarde a resposta atual terminar para enviar outra pergunta.'); return;
+    }
+    $('#chatTexto').value = ''; $('#chatTexto').style.height = '';
+    encaminha(t);
+  });
+  $('#chatTexto').addEventListener('keydown', e => {
+    if(e.key === 'Enter' && !e.shiftKey && !e.isComposing){ e.preventDefault(); $('#chatForm').requestSubmit(); }
+  });
+  $('#chatTexto').addEventListener('input', e => {
+    const t = e.target; t.style.height = ''; t.style.height = Math.min(t.scrollHeight, 150) + 'px';
+  });
+  $('#chatMsgs').addEventListener('click', e => {
+    const b = e.target.closest('button.acao-chat');
+    if(b){
+      const cartao = b.closest('.cartao'), a = cartao && cartao._acoes && cartao._acoes[Number(b.dataset.i)];
+      if(a && !b.disabled) a.faz(b);
+      return;
+    }
+    const p = e.target.closest('button[data-pergunta]');
+    if(p) perguntar(p.dataset.pergunta);
+  });
+  $('#chatAnexo').onclick = () => $('#chatArq').click();
+  $('#chatArq').onchange = e => { encaminhaArquivo(e.target.files[0]); e.target.value = ''; };
+  const painelChat = $('#chat');
+  const temArquivo = e => [...((e.dataTransfer && e.dataTransfer.types) || [])].includes('Files');
+  ['dragenter', 'dragover'].forEach(ev => painelChat.addEventListener(ev, e => {
+    if(temArquivo(e)){ e.preventDefault(); painelChat.classList.add('soltando'); } }));
+  painelChat.addEventListener('dragleave', e => { if(e.target === painelChat) painelChat.classList.remove('soltando'); });
+  painelChat.addEventListener('drop', e => {
+    painelChat.classList.remove('soltando');
+    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if(f){ e.preventDefault(); encaminhaArquivo(f); }
+  });
+
+  recarrega();
+});
+</script>
+</body></html>
