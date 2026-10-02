@@ -11,3 +11,7 @@ Não substituir o deployment de produção por esta recuperação parcial: isso 
 ## Inspeção local
 
 Execute `python -m http.server 8000` nesta pasta para inspecionar a interface. As chamadas de API não funcionarão nesse servidor estático. A interface também carrega fontes do Google Fonts e qrcodejs do cdnjs.
+
+## PIX temporariamente oculto
+
+A interface está configurada com `PIX_ATIVO = false`: não gera cobranças, não mostra a etapa de pagamento e o botão Verificar chama a consulta diretamente. Lotes anteriores permanecem no armazenamento, mas a retomada financeira fica suspensa. O backend original continua exigindo acesso e pode exigir pagamento; esta alteração não modifica essas regras do servidor nem garante consultas gratuitas. Publicar somente após recuperar e ajustar o backend.

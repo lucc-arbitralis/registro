@@ -303,6 +303,7 @@ tr.aberta td{background:var(--n50)}
 
 /* ---------- etapas: so mostram onde se esta, nao navegam ---------- */
 .etapas{display:flex;gap:6px;list-style:none;margin:0 0 var(--s2);flex-wrap:wrap}
+.etapas li[hidden]{display:none}
 .etapas li{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--n500);
   padding:5px 14px 5px 5px;border-radius:999px;background:var(--n100)}
 .etapas li span{width:22px;height:22px;border-radius:99px;display:inline-flex;align-items:center;
@@ -424,8 +425,8 @@ tr.aberta td{background:var(--n50)}
 
   <ol class="etapas" id="etapas" aria-label="Etapas da verificação">
     <li data-etapa="1"><span>1</span>Enviar imóveis</li>
-    <li data-etapa="2"><span>2</span>Pagar</li>
-    <li data-etapa="3"><span>3</span>Resultado</li>
+    <li data-etapa="2" hidden><span>2</span>Pagar</li>
+    <li data-etapa="3"><span>2</span>Resultado</li>
   </ol>
 
   <section class="painel">
@@ -651,6 +652,9 @@ tr.aberta td{background:var(--n50)}
 <script>/* Console de verificacao registral — Arbitralis.
    O navegador orquestra; cada chamada ao backend e curta e sem estado.
    O numero_pedido fica em localStorage: e o que impede pedir (e pagar) duas vezes. */
+
+// PIX temporariamente suspenso na interface; o backend mantém suas próprias regras.
+const PIX_ATIVO = false;
 
 const EMOL = {"MG": 9.79, "DF": 12.9, "PR": 15.84, "PE": 18.75, "SP": 22.95, "RS": 28.61, "PA": 34.38, "BA": 39.58, "GO": 39.99, "RJ": 52.18};          // emolumento por UF
 const GRUPOS = [{"id": "grupo", "nome": "Grupo Cyrela — todas as empresas cadastradas", "cnpjs": ["10.982.461/0001-60", "09.639.203/0001-05", "09.231.462/0001-94"], "a_confirmar": []}, {"id": "10.982.461/0001-60", "nome": "CYRELA EXTREMA EMPREENDIMENTOS IMOBILIÁRIOS LTDA", "cnpjs": ["10.982.461/0001-60"], "a_confirmar": []}, {"id": "09.639.203/0001-05", "nome": "LIVING PANAMÁ EMPREENDIMENTOS IMOBILIÁRIOS LTDA", "cnpjs": ["09.639.203/0001-05"], "a_confirmar": []}, {"id": "09.231.462/0001-94", "nome": "VMSS EMPREENDIMENTO IMOBILIÁRIO SPE S/A", "cnpjs": ["09.231.462/0001-94"], "a_confirmar": []}];      // alvos pre-cadastrados
@@ -1042,7 +1046,7 @@ function orca(){
   const prontas = loteProntas();
   const o = orcamentoAtual();
   const pend = LINHAS.filter(i=>i.estado==='pendente').length;
-  $('#custo').innerHTML = prontas.length
+  $('#custo').innerHTML = !PIX_ATIVO ? (prontas.length ? `<b>${prontas.length}</b> ${prontas.length===1?'matrícula':'matrículas'} prontas para verificar` : '') : prontas.length
     ? `<b>${prontas.length}</b> ${prontas.length===1?'matrícula':'matrículas'} · `+
       `emolumentos R$ ${brl(o.emolumentos)} + honorário R$ ${brl(o.honorario)}`+
       (o.minimoAplicado?' <span class="dim">(mínimo)</span>':'')+
@@ -1255,6 +1259,7 @@ function loteEnxuto(){
 // Etapa de pagamento. Entra entre conferir e consultar: nada e pedido ao cartorio
 // antes de o dinheiro entrar.
 function mostraPagamento(){
+  if(!PIX_ATIVO) return executar();
   const o = orcamentoAtual(), n = loteProntas().length;
   $('#pagConta').innerHTML =
     `<table>
@@ -1277,6 +1282,7 @@ function mostraPagamento(){
 }
 
 async function geraCobranca(){
+  if(!PIX_ATIVO) return;
   const nome = $('#pagNome').value.trim(), doc = $('#pagDoc').value.trim();
   if(!nome || !doc){ alert('Preencha a razão social e o CNPJ do pagador.'); return; }
   const btn = $('#btnCobrar');
@@ -1354,7 +1360,7 @@ function esperaPagamento(){
 async function rodar(){
   if(rodando) return;
   // Sem cobranca gerada, o botao Verificar abre a etapa de pagamento em vez de consultar.
-  if(!COBRANCA){ mostraPagamento(); return; }
+  if(PIX_ATIVO && !COBRANCA){ mostraPagamento(); return; }
   return executar();
 }
 
@@ -1868,6 +1874,7 @@ function avisaExcel(nome){
     [{ rotulo: 'Baixar o modelo de planilha', faz: () => $('#modelo').click() }]);
 }
 function avisaPagamento(){
+  if(!PIX_ATIVO) return;
   const o = orcamentoAtual(), n = loteProntas().length;
   bolha('pagamento', `<b>R$ ${brl(o.total)}</b> para ${n} ${plural(n, 'matrícula', 'matrículas')}. ` +
     'Preencha o pagador ao lado e gere o PIX.',
@@ -1876,6 +1883,7 @@ function avisaPagamento(){
     {noFim: true});
 }
 function avisaPix(){
+  if(!PIX_ATIVO) return;
   const r = COBRANCA; if(!r) return;
   let qr = '';
   // O mesmo QR do painel, copiado do desenho que ja existe: nao ha segundo gerador.
@@ -2184,7 +2192,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   // O registro e gravado ao gerar o PIX, antes do pagamento: por isso a tela confere a
   // cobranca no gateway antes de dizer "pago".
   const guardado = loteGuardado();
-  if(guardado){
+  if(PIX_ATIVO && guardado){
     const cob = cobrancaGuardada(guardado);
     const faltam = (guardado.linhas||[]).filter(i=>i.estado==='fila' || i.estado==='erro').length;
     const idade = guardado.dias >= 1 ? ` (de ${guardado.dias} ${guardado.dias===1?'dia':'dias'} atrás)` : '';
